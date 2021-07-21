@@ -1,0 +1,75 @@
+{% extends 'portal/index0.html' %}
+{% load static %}
+
+{% block main %}
+    <form id="main-form">
+        <div class="form-title" style="position:relative;">
+            HCU Admin
+        </div>
+
+        <div class="input-group">
+            <div class="label-grid-3" id="tabs">
+                <input value="0" type="radio" id="tab-unverified"
+                       {% if tab == 0 %}checked{% endif %}>
+                <label for="tab-unverified" class="checkbox-label"
+                       onclick="location.href='{% url 'admin_hcu' %}?tab=0'">Unverified</label>
+                <input value="1" type="radio" id="tab-waitlist"
+                       {% if tab == 1 %}checked{% endif %}>
+                <label for="tab-waitlist" class="checkbox-label"
+                       onclick="location.href='{% url 'admin_hcu' %}?tab=1'">Waitlist</label>
+                <input value="2" type="radio" id="tab-occupied-t1"
+                       {% if tab == 2 %}checked{% endif %}>
+                <label for="tab-occupied-t1" class="checkbox-label"
+                       onclick="location.href='{% url 'admin_hcu' %}?tab=2'">Occupied Type 1</label>
+                <input value="3" type="radio" id="tab-occupied-manas"
+                       {% if tab == 3 %}checked{% endif %}>
+                <label for="tab-occupied-manas" class="checkbox-label"
+                       onclick="location.href='{% url 'admin_hcu' %}?tab=3'">Occupied Manas</label>
+                <input value="4" type="radio" id="tab-occupied-tulsi"
+                       {% if tab == 4 %}checked{% endif %}>
+                <label for="tab-occupied-tulsi" class="checkbox-label"
+                       onclick="location.href='{% url 'admin_hcu' %}?tab=4'">Occupied Tulsi</label>
+                <input value="5" type="radio" id="tab-all"
+                       {% if tab == 5 %}checked{% endif %}>
+                <label for="tab-all" class="checkbox-label"
+                       onclick="location.href='{% url 'admin_hcu' %}?tab=5'">Vacated</label>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <table class="all-entries">
+                <thead class="sticky">
+                <tr>
+                    <th>S. No.</th>
+                    <th>Roll Number</th>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for instance in arr %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ instance.roll_number }}</td>
+                        <td>{{ instance.name }}</td>
+                        <td>{{ instance.get_status_string }}</td>
+                        <td>
+                            <button type="button" class="fullwidth"
+                                    onclick="location.href = '{% url 'admin_hcu_details' %}?roll_number={{ instance.roll_number }}'">
+                                View details
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+                {% if arr|length == 0 %}
+                    <tr>
+                        <td colspan="5" style="text-align: center">No entry yet.</td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </form>
+{% endblock %}
+

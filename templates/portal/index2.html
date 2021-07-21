@@ -1,0 +1,278 @@
+{% extends 'portal/index0.html' %}
+
+{% block main %}
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-title">Welcome, {{ user.get_full_name }}!</div>
+
+        <div class="input-group" style="display: none">
+            <label for="status"></label>
+            <input type="text" name="status" value="{{ status }}" id="status">
+        </div>
+
+        <div class="steps">
+            <div class="step {% if status == 1 %}ongoing{% elif status > 1 %}complete{% endif %}">
+                <div class="step-title">
+                    1. Verification of Academic Details
+                </div>
+                {% if status == 1 %}
+                    <div class="step-body">
+                        <p>
+                            Your application is with the academic section for verification of the
+                            academic details you have provided.
+                        </p>
+
+                        {% if instance.acad_feedback %}
+                            <div class="feedback">
+                                <p class="feedback-title">Feedback from Academic Section</p>
+
+                                <p class="feedback-text">
+                                    {{ instance.acad_feedback | linebreaks }}
+                                </p>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="step {% if status == 2 %}ongoing{% elif status > 2 %}complete{% endif %}">
+                <div class="step-title">
+                    2. Verification of Documents Submitted
+                </div>
+                {% if status == 2 %}
+                    <div class="step-body">
+                        <p>
+                            Your application is with the HCU office for verification of the documents you
+                            have submitted.
+                        </p>
+
+                        {% if instance.hcu_feedback %}
+                            <div class="feedback">
+                                <p class="feedback-title">Feedback from HCU Office</p>
+
+                                <p class="feedback-text">
+                                    {{ instance.hcu_feedback | linebreaks }}
+                                </p>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="step {% if status == 3 %}ongoing{% elif status > 3 %}complete{% endif %}">
+                <div class="step-title">
+                    3. Shortlisting and Occupying
+                </div>
+                {% if status == 3 %}
+                    <div class="step-body">
+                        {% if instance.waitlist_t1 == -2 and instance.waitlist_mt == -2 %}
+                            <p>
+                                You declined to all the seats offered to you by the HCU Office.
+                                To reappear in the waitlist, you have to reapply for accommodation.
+                            </p>
+
+                            <div class="input-group submit-input-group">
+                                <button type="submit" name="post" value="reapply">Reapply</button>
+                            </div>
+                        {% elif instance.offer == 0 and instance.occupying == 0 %}
+                            <p>
+                                Your documents have been verified and you are now eligible for hostel allocation.
+                                The HCU office is working on the same.
+                            </p>
+
+                            <div class="input-group" style="margin-bottom: 0">
+                                <table>
+                                    <thead>
+                                    <tr>
+                                        <th>Hostel(s)</th>
+                                        <th>Waitlist Rank</th>
+                                    </tr>
+                                    </thead>
+
+                                    <tbody>
+                                    {% if instance.waitlist_t1 != -1 %}
+                                        <tr>
+                                            <td>Type 1</td>
+                                            <td>
+                                                {% if instance.waitlist_t1 == -2 %}
+                                                    Declined
+                                                {% elif instance.waitlist_t1 == -3 %}
+                                                    Vacated on
+                                                    <span class="highlight">{{ vacated_on|date:"F d, Y" }}</span>
+                                                {% else %}
+                                                    {{ instance.waitlist_t1 }}
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                    <tr>
+                                        <td>Manas and Tulsi</td>
+                                        <td>{% if instance.waitlist_mt == -2 %}Declined{% else %}
+                                            {{ instance.waitlist_mt }}{% endif %}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% elif instance.occupying == 0 and instance.offer > 0 %}
+                            <div>
+                                You have been shortlisted for <span
+                                    style="color: var(--success-green); font-weight: 500">{{ offered_hostel }}</span>.
+                                Proceed with the selection?
+                                {% if instance.offer == 1 %}
+                                    <p class="help-text">
+                                        If you decline, your entry will be discarded from the Type 1 selections
+                                        but will stay as is in the waitlist for Manas and Tulsi.
+                                    </p>
+                                    <p class="help-text">
+                                        Make a choice on or before <b>{{ expiry|date:"F d, Y" }}</b>, else it will be
+                                        declined
+                                        automatically.
+                                    </p>
+                                {% else %}
+                                    <p class="help-text">
+                                        If you decline, your entry will be discarded from the selection process
+                                        as well as from the waitlist.
+                                    </p>
+                                    <p class="help-text">
+                                        Make a choice on or before <b>{{ expiry|date:"F d, Y" }}</b>, else it will be
+                                        declined
+                                        automatically.
+                                    </p>
+                                {% endif %}
+                            </div>
+
+                            <div class="input-group submit-input-group" style="margin-top: 10px">
+                                <button id="decline-btn" type="submit" name="post" value="decline" class="error"
+                                        onclick="onClick(event)">Decline
+                                </button>
+                                <button id="accept-btn" type="submit" name="post" value="accept"
+                                        onclick="onClick(event)">Accept
+                                </button>
+                            </div>
+
+                        {% elif instance.occupying > 0 %}
+                            <p>
+                                You are currently occupying <span
+                                    style="color: var(--success-green); font-weight: 500">{{ occupying }}</span>,
+                                since <span class="highlight">{{ occupied_on|date:"F d, Y" }}</span>.
+                            </p>
+
+                            {% if instance.offer > 1 %}
+                                You have been shortlisted for <span
+                                    style="color: var(--success-green); font-weight: 500">{{ offered_hostel }}</span>.
+                                Proceed with the selection?
+                                <p class="help-text">
+                                    On accepting, you will be transferred to {{ offered_hostel }}. On declining,
+                                    your seat at {{ occupying }} will be locked.
+                                </p>
+                                <p class="help-text">
+                                    Make a choice on or before <b>{{ expiry|date:"F d, Y" }}</b>, else it will be
+                                    declined
+                                    automatically.
+                                </p>
+                                <div class="input-group submit-input-group" style="margin-top: 10px">
+                                    <button id="decline-btn" type="submit" name="post" value="decline" class="error"
+                                            onclick="onClick(event)">Decline
+                                    </button>
+                                    <button id="accept-btn" type="submit" name="post" value="accept"
+                                            onclick="onClick(event)">Accept
+                                    </button>
+                                </div>
+                            {% elif instance.waitlist_mt > 0 %}
+                                <div class="input-group" style="margin-bottom: 0">
+                                    <table>
+                                        <thead>
+                                        <tr>
+                                            <th>Hostel(s)</th>
+                                            <th>Waitlist Rank</th>
+                                        </tr>
+                                        </thead>
+
+                                        <tbody>
+                                        <tr>
+                                            <td>Manas and Tulsi</td>
+                                            <td>{{ instance.waitlist_mt }}</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% endif %}
+
+                            <div class="input-group submit-input-group" style="margin-top: 10px">
+                                <button id="vacate-btn" type="submit" name="post" value="vacate" class="error"
+                                        onclick="onClick2(event)">
+                                    Vacate {{ occupying }}
+                                </button>
+                            </div>
+
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="step {% if status == 4 %}ongoing{% elif status > 4 %}complete{% endif %}">
+                <div class="step-title">
+                    4. Vacated
+                </div>
+                {% if status == 4 %}
+                    <div class="step-body">
+                        <p>
+                            You vacated <span class="highlight">{{ vacated }}</span>
+                            on <span class="highlight">{{ vacated_on|date:"F d, Y" }}</span>.
+                        </p>
+
+                        <div class="input-group submit-input-group">
+                            <button type="submit" name="post" value="reapply">Reapply</button>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </form>
+{% endblock %}
+
+{% block script %}
+    <script>
+
+        let prompt = false;
+        const ls = ['decline-btn', 'accept-btn'];
+
+        function onClick(e) {
+            if (!prompt) {
+                e.preventDefault();
+                prompt = true;
+
+                const id = e.target.getAttribute('id');
+                const index2 = 1 - ls.indexOf(id)
+
+                document.getElementById(ls[index2]).style.display = 'none';
+
+                const prevHTML = e.target.innerHTML;
+                e.target.innerHTML = "You won't be able to edit your response once submitted. Click again to continue."
+
+                setTimeout(() => {
+                    document.getElementById(ls[index2]).style.display = 'block';
+                    e.target.innerHTML = prevHTML;
+                    prompt = false;
+                }, 3000);
+            }
+        }
+
+        function onClick2(e) {
+            if (!prompt) {
+                e.preventDefault();
+                prompt = true;
+
+                const prevHTML = e.target.innerHTML;
+                e.target.innerHTML = "All your allotments, shortlistings and waitlistings will be discarded unless" +
+                    " you reapply. Click again to confirm."
+
+                setTimeout(() => {
+                    e.target.innerHTML = prevHTML;
+                    prompt = false;
+                }, 3000);
+            }
+        }
+
+    </script>
+{% endblock %}

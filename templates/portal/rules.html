@@ -1,0 +1,76 @@
+{% extends 'portal/index0.html' %}
+
+{% block main %}
+    <div class="form-parent">
+        <form>
+            <div class="form-title">
+                Rules and Regulations
+            </div>
+            <div class="input-group para-group">
+                <p>
+                    Please go through all the rules and regulations pertaining to the residence allocation system
+                    before continuing to registration.
+                </p>
+                <ul class="large">
+                    <li>
+                        Horizontal transfer request of quarters from Tulsi to MRSB or viceversa is not applicable from
+                        01st July 2021. The above rule does not apply for Type-1 quarter. They are allowed one transfer
+                        to either Tulsi or MRSB based on the application seniority.
+                    </li>
+                    <li>
+                        While applying for married quarter one can opt for any of the above quarters or all the above
+                        with choice preference. Allocation will be done based on the application seniority and not based
+                        on registration. The application seniority will be maintained even if the lower choice
+                        accommodation is offered, however, not accepted.
+                    </li>
+                    <li>
+                        It is the responsibilty of the resident to vacate the allotted quarter within the allowed period
+                        of stay. Any overstay without permission from A.Dean.SA hereafter will attract a fine of Rs.
+                        500/- perday and if requried the security will be authorised to lock the quarter, if overstay
+                        without any intimation is noted.
+                    </li>
+                    <li>
+                        Damage/modification or drawing on the interior or outer walls of the alloted quarter will
+                        attract heavy fines and if required eviction of the quarter and cancellation of the application
+                        request.
+                    </li>
+                    <li>
+                        Need to pay Rs. 5000/- as deposit for married quarter accommodation.
+                    </li>
+                    <li>
+                        It is the duty of vacating resident to clean the flat before handover. Any disposable materials
+                        should be disposed.
+                    </li>
+                    <li>
+                        No material/items/furnitures should be kept outside the flat in the veranda/lobby or in the
+                        quarter premise. If found will be taken without intimation and will be disposed as scrap.
+                        Unclaimed cycles/two-wheelers will be disposed as scrap.
+                    </li>
+                    <li>
+                        Residents are allowed to keep only 01 two-wheeler and 01 four wheeler or 02 two wheeler. The
+                        vehicles should bear proper IIT registration. Any vehicles without IITB stickers will attract
+                        fine as appropriate.
+                    </li>
+                    <li>
+                        It is expected that the residents need to follow the protocols of fair behaviour and avoid any
+                        nuisances to the neighbour. Loud musics or anyother activities that case disturbances to other
+                        will lead to appropriate actions.
+                    </li>
+                    <li>
+                        Cigarrete smoking, alcohol and banned substances are strictly prohibitted in the academic
+                        campus.
+                    </li>
+                    <li>
+                        For any functions in the quarter premises obtain permission from HCU office. It is also the duty
+                        of the residents to keep the quarter, lobby, lifts, stairs and surrounding clean. Violation will
+                        lead to fine for the entire residents.
+                    </li>
+                </ul>
+            </div>
+            <div class="input-group submit-input-group">
+                <button type="button" class="secondary" onclick="location.href = '{% url 'index' %}'">Back to Home</button>
+                <button type="button" onclick="location.href = '{% url 'apply' %}'">Accept and Continue</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

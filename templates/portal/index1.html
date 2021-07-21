@@ -1,0 +1,24 @@
+{% extends 'portal/index0.html' %}
+
+{% block main %}
+    <form>
+        <div class="form-title">
+            Welcome, {{ user.get_full_name }}!
+        </div>
+        <div class="input-group para-group">
+            <p>
+                You have not yet applied for accommodation. To proceed with application, make sure you possess
+                the following requisite documents.
+            </p>
+            <ul>
+                <li>Marriage certificate</li>
+                <li>Joint photograph with spouse (Postcard size)</li>
+                <li>Course work grade sheet</li>
+                <li>Recommendation for accommodation from the guide</li>
+            </ul>
+        </div>
+        <div class="input-group submit-input-group">
+            <button type="button" onclick="location.href = '{% url 'rules' %}'">Continue</button>
+        </div>
+    </form>
+{% endblock %}

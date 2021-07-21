@@ -1,0 +1,123 @@
+{% extends 'portal/index0.html' %}
+{% load widget_tweaks %}
+
+{% block style %}
+    <style>
+        textarea {
+            text-align: left !important;
+        }
+    </style>
+{% endblock %}
+
+{% block main %}
+    <form onsubmit="onSubmit(event)" method="post">
+        {% csrf_token %}
+        <div class="form-title">
+            Applicant Details
+        </div>
+        <div class="input-group">
+            <table>
+                <thead>
+                <tr>
+                    <th>Field</th>
+                    <th>Value</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for field in applicant.visible_fields %}
+                    {% if field.name == 'acad_feedback' %}
+                    {% else %}
+                        <tr>
+                            <td>{{ field.label }}</td>
+                            {% if field.value %}
+                                <td>{{ field.value|linebreaks }}</td>
+                            {% else %}
+                                <td style="color: var(--help-text-color); font-size: 0.8em;">Not provided</td>
+                            {% endif %}
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="input-group">
+            <label>Academic details verified?</label>
+            <div class="label-grid">
+                <input type="radio" name="verification_status" id="vs_verified" onchange="onChangeVer(event)"
+                       value="verified" {% if applicant.instance.acad_verified %}checked disabled{% endif %}>
+                <label for="vs_verified" class="checkbox-label success">Verified</label>
+                <input type="radio" name="verification_status" id="vs_not_verified"
+                       {% if not applicant.instance.acad_verified %}checked{% else %}disabled{% endif %}
+                       onchange="onChangeVer(event)" value="not_verified">
+                <label for="vs_not_verified" class="checkbox-label error">Not Verified</label>
+            </div>
+        </div>
+
+        {% if not applicant.instance.acad_verified %}
+            <div class="input-group" id="feedback-ta-p">
+                {% for field in applicant.visible_fields %}
+                    {% ifequal field.name 'acad_feedback' %}
+                        {{ field.label_tag }}
+                        <div class="help-text">{{ field.help_text }}</div>
+                        {% render_field field rows='4' %}
+                    {% endifequal %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="input-group" style="display: none">
+            <label for="id"></label>
+            <input type="number" value="{{ applicant.instance.id }}" name="id" id="id">
+        </div>
+
+        <div class="input-group submit-input-group" style="margin-top: 5px !important;">
+            <button class="secondary" type="button" id="cancel-btn" onclick="location.href = '{% url 'admin_acad' %}'">
+                Back
+            </button>
+            {% if not applicant.instance.acad_verified %}
+                <button type="submit" id="submit-btn">Save</button>
+            {% endif %}
+        </div>
+    </form>
+{% endblock %}
+
+{% block script %}
+    <script>
+        let prompt = false;
+        let verified = {% if applicant.instance.acad_verified %} true {% else %} false {% endif %};
+
+        console.log(verified);
+
+        function onChangeVer(e) {
+            verified = e.target.value === 'verified';
+            const el = document.getElementById('feedback-ta-p');
+            if (verified) {
+                el.classList.add('hidden');
+            } else {
+                el.classList.remove('hidden');
+            }
+        }
+
+        function onSubmit(e) {
+            if (!prompt && verified) {
+                e.preventDefault();
+                prompt = true;
+
+                document.getElementById('cancel-btn').style.display = 'none';
+
+                const submitBtn = document.getElementById('submit-btn');
+                submitBtn.innerHTML = "The entry won't be editable once " +
+                    "submitted. Kindly review it once if unsure. Click again to proceed."
+                submitBtn.classList.add('dark');
+
+                setTimeout(() => {
+                    document.getElementById('cancel-btn').style.display = 'block';
+                    submitBtn.innerHTML = "Proceed";
+                    submitBtn.classList.remove('dark');
+                    prompt = false;
+                }, 5000);
+            }
+        }
+    </script>
+{% endblock %}

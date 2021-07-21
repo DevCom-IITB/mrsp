@@ -1,0 +1,119 @@
+{% extends 'portal/index0.html' %}
+{% load widget_tweaks %}
+
+{% block main %}
+    <form method="post" action="{% url 'apply' %}" novalidate enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="form-title">
+            Apply for Accommodation
+        </div>
+
+        {% for field in form.visible_fields %}
+            <div class="input-group">
+                {{ field.label_tag }}
+                <div class="help-text">{{ field.help_text }}</div>
+                {% ifequal field.field.widget.input_type 'radio' %}
+                    <div class="label-grid">
+                        {% for radio in field %}
+                            {{ radio.tag }}
+                            <label class="checkbox-label"
+                                   for="id_{{ field.name }}_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {% ifequal field.field.widget.input_type 'file' %}
+                        <label for="id_{{ field.name }}" class="file-input-parent">
+                            <snap class="file-input-value help-text">Select a file</snap>
+                            {% render_field field spellcheck='false' %}
+                        </label>
+                    {% else %}
+                        {% render_field field spellcheck='false' %}
+                    {% endifequal %}
+                {% endifequal %}
+                {% if field.errors and retrying %}
+                    {% for error in field.errors %}
+                        <div class="error-message">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <hr>
+
+        <div class="undertaking">
+            <div class="form-title-2">
+                Undertaking
+            </div>
+
+            <ol>
+                <li>
+                    I shall immediately vacate the family accommodation on expiry of my studentship or terminate my
+                    studentship by authorities for any reason.
+                </li>
+                <li>
+                    I shall stay in the family accommodation allotted to me with my spouse and child/children only.
+                </li>
+                <li>
+                    I declare that my spouse, Mrs./Mr. <span class="undertaking-entry error"
+                                                             id="id_spouse_name_ut">N/A</span>
+                    is working/studying in IITB and has not applied for/been allotted any accommodation by the
+                    Institute.
+                </li>
+                <li>
+                    Note that a false declaration shall permanently disqualify the applicant for allotment. Mention roll
+                    no: <span class="undertaking-entry" id="id_spouse_roll_number_ut">N/A</span> and designation:
+                    <span class="undertaking-entry" id="id_spouse_designation_ut">N/A</span> of the spouse in case
+                    he/she is a
+                    student/employee.
+                </li>
+            </ol>
+        </div>
+
+        <div class="input-group submit-input-group">
+            <button type="button" class="secondary" onclick="location.href='{% url 'rules' %}'">
+                Back to Rules and Regulations
+            </button>
+            <input type="submit">
+        </div>
+    </form>
+{% endblock %}
+
+{% block script %}
+    {{ undertaking_fields | json_script:"undertaking-fields" }}
+
+    <script id="script" type="application/javascript">
+        const fileInputPars = document.getElementsByClassName('file-input-parent');
+        Array.prototype.forEach.call(fileInputPars, function (el) {
+            el.onchange = function () {
+                const inp = el.getElementsByTagName('input')[0];
+                const label = el.getElementsByClassName('file-input-value')[0];
+                if (inp.value === '') {
+                    label.innerHTML = 'Select a file';
+                    label.classList.add('help-text');
+                } else {
+                    label.innerHTML = inp.value.replace(/.*[\/\\]/, '');
+                    label.classList.remove('help-text');
+                }
+            }
+        });
+
+        const undertaking_fields = JSON.parse(document.getElementById('undertaking-fields').textContent);
+        Array.prototype.forEach.call(Object.keys(undertaking_fields), function (str) {
+            document.getElementById('id_' + str).oninput = function () {
+                const el = document.getElementById('id_' + str + '_ut');
+                el.innerHTML = this.value === '' ? (() => {
+                    if (undertaking_fields[str]) {
+                        el.classList.add('error');
+                    }
+                    return 'N/A';
+                })() : (() => {
+                    el.classList.remove('error');
+                    return this.value;
+                })();
+            }
+        });
+    </script>
+{% endblock %}

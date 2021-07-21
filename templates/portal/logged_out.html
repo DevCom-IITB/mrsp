@@ -1,0 +1,19 @@
+{% extends 'portal/index0.html' %}
+
+{% block main %}
+    <main>
+        <form id="intro">
+            <div class="form-title">
+                Logged out.
+            </div>
+            <div class="input-group para-group center">
+                <p>You have been logged out successfully.</p>
+                <a href="{% url 'index' %}">
+                    <button type="button" onclick="location.href = '{% url 'index' %}'">
+                        Back to Home
+                    </button>
+                </a>
+            </div>
+        </form>
+    </main>
+{% endblock %}

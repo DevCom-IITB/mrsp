@@ -1,0 +1,58 @@
+{% load static %}
+
+{% with SITE_TITLE="Married Research Scholars Portal" %}
+    {% with DESCRIPTION="Apply for apartments for married research scholars" %}
+
+        <!doctype html>
+        <html lang="en">
+        <head>
+            <div id="loadOverlay"></div>
+            <meta charset="UTF-8">
+            <meta name="viewport"
+                  content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+            <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+            {% block page_title %}
+                <title>
+                    {{ SITE_TITLE }}
+                </title>
+            {% endblock %}
+
+            <link rel="stylesheet" href="{% static 'stylesheets/index.css' %}">
+
+            {% block style %}
+            {% endblock %}
+        </head>
+        <body>
+        <nav>
+            <h3>{{ SITE_TITLE }}</h3>
+
+            {% if user.is_authenticated %}
+                <button class="error" onclick="location.href = '{% url 'logout_client' %}'">Log out</button>
+            {% endif %}
+        </nav>
+
+        {% block main %}
+            <main>
+                <form id="intro">
+                    <div class="form-title">
+                        {{ SITE_TITLE }}
+                    </div>
+                    <div class="input-group para-group center">
+                        <p>{{ DESCRIPTION }}</p>
+                        <button type="button" onclick="location.href = '{% url 'oauth' %}'">
+                            Sign in with SSO
+                        </button>
+                    </div>
+                </form>
+            </main>
+        {% endblock %}
+
+        {% block script %}
+        {% endblock %}
+
+        </body>
+        </html>
+
+    {% endwith %}
+{% endwith %}

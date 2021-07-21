@@ -1,0 +1,45 @@
+{% extends 'portal/index0.html' %}
+{% load static %}
+
+{% block main %}
+    <form id="main-form">
+        <div class="form-title" style="position:relative;">
+            List of Unverified Applicants
+        </div>
+
+        <div class="input-group">
+            <table class="all-entries">
+                <thead class="sticky">
+                <tr>
+                    <th>S. No.</th>
+                    <th>Roll Number</th>
+                    <th>Name</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for instance in unverified_arr %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ instance.roll_number }}</td>
+                        <td>{{ instance.name }}</td>
+                        <td>
+                            <button type="button" class="dark fullwidth"
+                                    onclick="location.href = '{% url 'admin_acad_details' %}?roll_number={{ instance.roll_number }}'">
+                                View details
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+
+                {% if unverified_arr|length == 0 %}
+                    <tr>
+                        <td colspan="4" style="text-align: center">No entry yet.</td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </form>
+{% endblock %}
+

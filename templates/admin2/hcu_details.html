@@ -1,0 +1,298 @@
+{% extends 'portal/index0.html' %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block style %}
+    <style>
+        textarea {
+            text-align: left !important;
+        }
+    </style>
+{% endblock %}
+
+{% block main %}
+    <form method="post" id="main-form" onsubmit="onSubmit(event)">
+        {% csrf_token %}
+        <div class="form-title">
+            Applicant Details
+        </div>
+        <div class="input-group">
+            <div class="label-grid" id="tabs">
+                <input value="0" type="radio" v-model="tab" id="tab-details">
+                <label for="tab-details" class="checkbox-label">Details</label>
+                {% if instance.get_status_id != 0 %}
+                    <input value="1" type="radio" v-model="tab" id="tab-status">
+                    <label for="tab-status" class="checkbox-label">Status</label>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="input-group" style="display: none">
+            <label for="id"></label>
+            <input type="number" value="{{ instance.id }}" name="id" id="id">
+        </div>
+
+        <div class="input-group" style="display: none">
+            <label for="status"></label>
+            <input type="number" value="{{ status }}" name="status" id="status">
+        </div>
+
+        <div class="input-group" v-if="tab === '0'">
+            <table>
+                <thead>
+                <tr>
+                    <th>Field</th>
+                    <th>Value</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Current status</td>
+                    <td>{{ instance.get_status_string }}</td>
+                </tr>
+                {% for field in details_form.visible_fields %}
+                    {% if field.name not in positive_only or field.value > 0 %}
+                        {% if field.value %}
+                            <tr>
+                                <td>{{ field.label }}</td>
+                                {% if field.field.widget.input_type == 'file' %}
+                                    <td>
+                                        <button type="button" class="fullwidth secondary"
+                                                onclick="window.open('{% url 'admin_view_file' %}?roll_number={{ instance.roll_number }}&doc={{ field.name }}', 'document', `height=${screen.height}, width=${screen.width}`)">
+                                            View document
+                                        </button>
+                                    </td>
+                                {% else %}
+                                    {% if field.name == 'occupied_on' or field.name == 'vacated_on' %}
+                                        <td>{{ field.value|date:"F d, Y" }}</td>
+                                    {% else %}
+                                        <td>{{ field.value|linebreaks }}</td>
+                                    {% endif %}
+                                {% endif %}
+                            </tr>
+                        {% else %}
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="input-group submit-input-group" style="margin-top: 20px">
+                <button class="secondary" type="button" id="cancel-btn"
+                        onclick="location.href = '{% url 'admin_hcu' %}'">
+                    Back to Waitlist
+                </button>
+            </div>
+        </div>
+
+        {% if instance.get_status_id != 0 %}
+            <div class="steps" v-if="tab === '1'">
+                <div class="step {% if status == 1 %}ongoing{% elif status > 1 %}complete{% endif %}">
+                    <div class="step-title">1. Verification of documents</div>
+                    {% if status == 1 %}
+                        <div class="step-body">
+                            <div class="table-parent">
+                                <table>
+                                    <thead>
+                                    <tr>
+                                        <th>Document</th>
+                                        <th></th>
+                                        <th>Verification</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for field in verification_form.visible_fields %}
+                                        {% if field.field.widget.input_type == 'radio' %}
+                                            <tr>
+                                                <td>{{ field.label_tag }}</td>
+                                                <td>
+                                                    <button type="button" class="secondary"
+                                                            onclick="window.open('{% url 'admin_view_file' %}?roll_number={{ instance.roll_number }}&doc={{ field.name }}', 'document', `height=${screen.height}, width=${screen.width}`)">
+                                                        View document
+                                                    </button>
+                                                </td>
+                                                <td>
+                                                    <div class="label-grid">
+                                                        {% for radio in field %}
+                                                            {{ radio.tag }}
+                                                            <label class="checkbox-label {% ifequal radio.choice_label 'Verified' %}success{% else %}error{% endifequal %}"
+                                                                   @click="show_hide_fb()"
+                                                                   for="id_{{ field.name }}_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
+                                                        {% endfor %}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                <div class="input-group" id="feedback-ta-p" v-if="show_feedback">
+                                    {% for field in verification_form.visible_fields %}
+                                        {% ifequal field.name 'hcu_feedback' %}
+                                            {{ field.label_tag }}
+                                            <div class="help-text">{{ field.help_text }}</div>
+                                            {% render_field field rows='4' %}
+                                        {% endifequal %}
+                                    {% endfor %}
+                                </div>
+                                <div class="input-group submit-input-group">
+                                    <button class="secondary" type="button" id="cancel-btn"
+                                            onclick="location.href = '{% url 'admin_hcu' %}'">
+                                        Back to Waitlist
+                                    </button>
+                                    <button type="submit" id="submit-btn">Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="step {% if status == 2 %}ongoing{% elif status > 2 %}complete{% endif %}">
+                    <div class="step-title">2. Shortlist</div>
+                    {% if status == 2 %}
+                        <div class="step-body">
+                            {% if instance.waitlist_t1 == -2 and instance.waitlist_mt == -2 %}
+                                <p>
+                                    The applicant declined to all the seat offers he was presented with.
+                                </p>
+                                <div class="input-group submit-input-group" style="margin-top: 20px">
+                                    <button class="secondary" type="button" id="cancel-btn"
+                                            onclick="location.href = '{% url 'admin_hcu' %}'">
+                                        Back to Waitlist
+                                    </button>
+                                </div>
+                            {% else %}
+                                {% for field in seat_form.visible_fields %}
+                                    <div class="input-field">
+                                        {{ field.label_tag }}
+                                        {% if instance.waitlist_t1 == -2 %}
+                                            <div class="help-text">Offer for Type 1 declined by the applicant</div>
+                                        {% elif instance.waitlist_t1 == 0 %}
+                                            <div class="help-text">The applicant is currently occupying Type 1.</div>
+                                        {% elif instance.waitlist_t1 == -3 %}
+                                            <div class="help-text">The applicant had vacated Type 1
+                                                on {{ instance.vacated_on|date:"F d, Y" }}.
+                                            </div>
+                                        {% endif %}
+                                        <div class="label-grid">
+                                            {% for radio in field %}
+                                                {% if radio.choice_label != 'Type 1' or instance.waitlist_t1 > 0 %}
+                                                    {{ radio.tag }}
+                                                    <label class="checkbox-label {% ifequal radio.choice_label 'None' %}error{% else %}success{% endifequal %}"
+                                                           for="id_{{ field.name }}_{{ forloop.counter0 }}">{{ radio.choice_label }}</label>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                        {% if expiry %}
+                                            Current offer expires on
+                                            <span class="highlight">{{ expiry|date:"F d, Y" }}</span>.
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                                <div class="input-group submit-input-group" style="margin-top: 20px">
+                                    <button class="secondary" type="button" id="cancel-btn"
+                                            onclick="location.href = '{% url 'admin_hcu' %}'">
+                                        Back to Waitlist
+                                    </button>
+                                    <button type="submit" id="submit-btn">Save</button>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="step {% if status == 3 %}ongoing{% elif status > 3 %}complete{% endif %}">
+                    <div class="step-title">3. Seat locked</div>
+                    {% if status == 3 %}
+                        <div class="step-body">
+                            Currently occupying <span class="highlight">{{ currently_occupying }}</span>.
+
+                            <div class="input-group submit-input-group" style="margin-top: 20px">
+                                <button class="secondary" type="button" id="cancel-btn"
+                                        onclick="location.href = '{% url 'admin_hcu' %}'">
+                                    Back to Waitlist
+                                </button>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="step {% if status == 4 %}ongoing{% elif status > 4 %}complete{% endif %}">
+                    <div class="step-title">4. Vacated</div>
+                    {% if status == 4 %}
+                        <div class="step-body">
+                            The applicant vacated <span class="highlight">{{ vacated }}</span>
+                            on <span class="highlight">{{ instance.vacated_on|date:"F d, Y" }}</span>.
+
+                            <div class="input-group submit-input-group" style="margin-top: 20px">
+                                <button class="secondary" type="button" id="cancel-btn"
+                                        onclick="location.href = '{% url 'admin_hcu' %}'">
+                                    Back to Waitlist
+                                </button>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </form>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'scripts/lib/vue.js' %}"></script>
+    <script>
+        const vers = ['marriage_certificate_verified', 'photograph_verified', 'grade_sheet_verified',
+            'recommendation_verified']
+
+        function show_fb() {
+            for (const el of vers) {
+                if (document.getElementById('main-form').elements[el].value !== 'True') {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        const vue = Vue.createApp({
+            delimiters: ["[[", "]]"],
+            data() {
+                return {
+                    tab: '1',
+                    show_feedback: true
+                }
+            },
+            methods: {
+                show_hide_fb() {
+                    setTimeout(() => {
+                        this.show_feedback = show_fb();
+                    })
+                }
+            }
+        });
+
+        vue.mount('#main-form');
+
+        let prompt = false;
+
+        function onSubmit(e) {
+            if (!prompt && !show_fb()) {
+                e.preventDefault();
+                prompt = true;
+
+                document.getElementById('cancel-btn').style.display = 'none';
+
+                const submitBtn = document.getElementById('submit-btn');
+                submitBtn.innerHTML = "The entry won't be editable once " +
+                    "submitted. Kindly review it once if unsure. Click again to proceed."
+                submitBtn.classList.add('dark');
+
+                setTimeout(() => {
+                    document.getElementById('cancel-btn').style.display = 'block';
+                    submitBtn.innerHTML = "Proceed";
+                    submitBtn.classList.remove('dark');
+                    prompt = false;
+                }, 5000);
+            }
+        }
+    </script>
+{% endblock %}
