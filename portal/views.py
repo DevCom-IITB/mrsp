@@ -1,7 +1,8 @@
+from django.forms import model_to_dict
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
-from .forms import ApplicantForm
+from .forms import ApplicantForm, EditDocsForm
 from oauth.decorators import redirect_if_authenticated, students_only
 from .models import WaitlistApplicant
 import datetime
@@ -96,13 +97,13 @@ def thanks(request):
 @login_required
 @students_only
 def apply(request):
-    instance = None
     try:
         instance = WaitlistApplicant.objects.get(roll_number=request.user.username)
-        if instance.vacated == 0 and instance.waitlist_mt > -2:
+        if (instance.vacated == 0 and instance.waitlist_mt > -2) and (
+                instance.acad_verified or instance.acad_feedback == ''):
             return redirect(reverse('index'))
     except ObjectDoesNotExist:
-        pass
+        instance = None
 
     form_data = dict()
     retrying = False
@@ -129,5 +130,41 @@ def apply(request):
     return render(request, 'portal/form.html', {
         'form': form,
         'undertaking_fields': {'spouse_name': True, 'spouse_roll_number': False, 'spouse_designation': False},
+        'retrying': retrying
+    })
+
+
+def edit_docs(request):
+    try:
+        instance = WaitlistApplicant.objects.get(roll_number=request.user.username)
+    except ObjectDoesNotExist:
+        return redirect(reverse('index'))
+
+    retrying = False
+    instance.marriage_certificate = ''
+    instance.photograph = ''
+    instance.grade_sheet = ''
+    instance.recommendation = ''
+    instance.marriage_certificate = ''
+
+    if instance.get_status_id() != 4 or instance.hcu_feedback == '':
+        return redirect(reverse('index'))
+
+    form = EditDocsForm(instance=instance)
+
+    print(model_to_dict(form.instance))
+
+    if request.method == 'POST':
+        form = EditDocsForm(instance=instance, files=request.FILES)
+        if form.is_valid():
+            form.save()
+            instance.updated_form = True
+            instance.save()
+            return redirect(reverse('index'))
+        else:
+            retrying = True
+
+    return render(request, 'portal/edit_docs.html', {
+        'form': form,
         'retrying': retrying
     })

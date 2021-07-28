@@ -12,7 +12,7 @@ class ApplicantBase(models.Model):
     def __str__(self):
         return self.roll_number
 
-    name = models.CharField(max_length=128, default='')
+    # name = models.CharField(max_length=128, default='')
     roll_number = models.CharField(max_length=15, unique=True)
     # email = models.EmailField(max_length=128, default='')
     # phone_number = models.CharField(max_length=10, validators=[RegexValidator(
@@ -30,7 +30,6 @@ class ApplicantBase(models.Model):
     #
     # fellowship_date = models.DateField(verbose_name='Date from which fellowship is awarded', null=True)
     # course_work_completes_on = models.DateField(help_text='Enter the expected date.', null=True)
-    # course_work_completed_by = models.CharField(max_length=128, default='')
     #
     # spouse_name = models.CharField(max_length=128, default='')
     # spouse_roll_number = models.CharField(max_length=128, help_text='Leave blank if inapplicable', blank=True,
@@ -38,17 +37,17 @@ class ApplicantBase(models.Model):
     # spouse_designation = models.CharField(max_length=128, help_text='Leave blank if inapplicable', blank=True,
     #                                       null=True, default='')
     #
-    # pdf_validator = FileExtensionValidator(allowed_extensions=['pdf'])
-    #
-    # marriage_certificate = models.FileField(upload_to='marriage_certificates/', default='',
-    #                                         help_text='PDF only', validators=[pdf_validator])
-    # photograph = models.FileField(upload_to='photographs', verbose_name='Joint photograph with spouse', default='',
-    #                               help_text='PDF only', validators=[pdf_validator])
-    # grade_sheet = models.FileField(upload_to='grade_sheets', verbose_name='Coursework grade-sheet', default='',
-    #                                help_text='PDF only', validators=[pdf_validator])
-    # recommendation = models.FileField(upload_to='recommendations',
-    #                                   verbose_name='Recommendation from the guide for accommodation', default='',
-    #                                   help_text='PDF only', validators=[pdf_validator])
+    pdf_validator = FileExtensionValidator(allowed_extensions=['pdf'])
+
+    marriage_certificate = models.FileField(upload_to='marriage_certificates/', default='',
+                                            help_text='PDF only', validators=[pdf_validator])
+    photograph = models.FileField(upload_to='photographs', verbose_name='Joint photograph with spouse', default='',
+                                  help_text='PDF only', validators=[pdf_validator])
+    grade_sheet = models.FileField(upload_to='grade_sheets', verbose_name='Coursework grade-sheet', default='',
+                                   help_text='PDF only', validators=[pdf_validator])
+    recommendation = models.FileField(upload_to='recommendations',
+                                      verbose_name='Recommendation from the guide for accommodation', default='',
+                                      help_text='PDF only', validators=[pdf_validator])
 
 
 class WaitlistApplicant(ApplicantBase):
@@ -86,9 +85,13 @@ class WaitlistApplicant(ApplicantBase):
     occupied_on = models.DateField(null=True)
     vacated_on = models.DateField(null=True)
 
+    updated_form = models.BooleanField(default=True)
+
+    def all_verified(self):
+        return self.acad_verified and self.marriage_certificate_verified and self.photograph_verified and self.grade_sheet_verified and self.recommendation_verified
+
     def refresh_waitlist_mock(self):
-        if not (self.acad_verified and self.marriage_certificate_verified
-                and self.photograph_verified and self.grade_sheet_verified and self.recommendation_verified):
+        if not self.all_verified():
             return -1, -1
 
         if self.pk is None:

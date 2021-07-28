@@ -30,6 +30,11 @@
                                     {{ instance.acad_feedback | linebreaks }}
                                 </p>
                             </div>
+                            <div class="input-group">
+                                <button class="fullwidth" type="button"
+                                        onclick="location.href = '{% url 'rules' %}'">Reapply
+                                </button>
+                            </div>
                         {% endif %}
                     </div>
                 {% endif %}
@@ -53,6 +58,15 @@
                                 <p class="feedback-text">
                                     {{ instance.hcu_feedback | linebreaks }}
                                 </p>
+                            </div>
+                            <div class="input-group">
+                                {% if not instance.updated_form %}
+                                    <button class="fullwidth" type="button"
+                                            onclick="location.href = '{% url 'edit_docs' %}'">Re-upload Documents
+                                    </button>
+                                {% else %}
+                                    <button class="fullwidth" disabled>Documents Updated</button>
+                                {% endif %}
                             </div>
                         {% endif %}
                     </div>

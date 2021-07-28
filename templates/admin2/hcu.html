@@ -55,7 +55,8 @@
                         <td>{{ instance.name }}</td>
                         <td>{{ instance.get_status_string }}</td>
                         <td>
-                            <button type="button" class="fullwidth"
+                            <button type="button"
+                                    class="fullwidth {% if not instance.updated_form and not instance.all_verified %}error{% endif %}"
                                     onclick="location.href = '{% url 'admin_hcu_details' %}?roll_number={{ instance.roll_number }}'">
                                 View details
                             </button>

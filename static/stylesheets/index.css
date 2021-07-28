@@ -345,6 +345,9 @@ hr {
   height: 2px;
   border: 1px inset var(--border-color); }
 
+.badge-div.error {
+  color: var(--error-red); }
+
 @media screen and (max-width: 900px) {
   form {
     width: 90vw;

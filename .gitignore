@@ -1,0 +1,7 @@
+db.sqlite3
+log.txt
+mrspenv/
+mrsp.sock
+uwsgi_params
+mrsp/settings_prod.py
+upload/

@@ -54,7 +54,7 @@ def hcu_admin(request):
 
         WaitlistApplicant.objects.filter(Q(waitlist_t1=-3) | Q(waitlist_mt=-3))]
 
-    tab = int(request.GET.get('tab') or '0')
+    tab = int(request.GET.get('tab') or '1')
     return render(request, 'admin2/hcu.html', {
         'arr': arr[tab],
         'tab': tab
@@ -106,6 +106,7 @@ def hcu_details(request):
             applicant.grade_sheet_verified = eval(request.POST.get('grade_sheet_verified'))
             applicant.recommendation_verified = eval(request.POST.get('recommendation_verified'))
             applicant.hcu_feedback = request.POST.get('hcu_feedback')
+            applicant.updated_form = False
             applicant.save()
 
             print(applicant.get_status_id())
@@ -124,7 +125,7 @@ def hcu_details(request):
             applicant.offered_on = datetime.date.today()
             applicant.save()
 
-        return redirect(f"{reverse('admin_hcu_details')}?roll_number={applicant.roll_number}")
+        return redirect("admin_hcu")
 
 
 @login_required

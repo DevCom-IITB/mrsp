@@ -11,6 +11,7 @@ urlpatterns = [
     path('rules/', portal.views.rules, name='rules'),
     path('apply/', portal.views.apply, name='apply'),
     path('thanks/', portal.views.thanks, name='thanks'),
+    path('edit_docs/', portal.views.edit_docs, name='edit_docs'),
 
     path('oauth/login/', oauth.views.oauth, name='oauth'),
     path('oauth/callback/', oauth.views.login_client, name='login_client'),
