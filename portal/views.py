@@ -141,11 +141,19 @@ def edit_docs(request):
         return redirect(reverse('index'))
 
     retrying = False
-    instance.marriage_certificate = ''
-    instance.photograph = ''
-    instance.grade_sheet = ''
-    instance.recommendation = ''
-    instance.marriage_certificate = ''
+    vf_indices = []
+    if not instance.marriage_certificate_verified:
+        instance.marriage_certificate = ''
+        vf_indices.append(0)
+    if not instance.photograph_verified:
+        instance.photograph = ''
+        vf_indices.append(1)
+    if not instance.grade_sheet_verified:
+        instance.grade_sheet = ''
+        vf_indices.append(2)
+    if not instance.recommendation_verified:
+        instance.recommendation = ''
+        vf_indices.append(3)
 
     if instance.get_status_id() != 4 or instance.hcu_feedback == '':
         return redirect(reverse('index'))
@@ -166,5 +174,6 @@ def edit_docs(request):
 
     return render(request, 'portal/edit_docs.html', {
         'form': form,
-        'retrying': retrying
+        'retrying': retrying,
+        'indices': vf_indices
     })

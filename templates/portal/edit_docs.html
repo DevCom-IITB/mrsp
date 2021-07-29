@@ -8,20 +8,22 @@
             Re-upload Files
         </div>
         {% for field in form.visible_fields %}
-            <div class="input-group">
-                {{ field.label_tag }}
-                <label for="id_{{ field.name }}" class="file-input-parent">
-                    <snap class="file-input-value help-text">Select a file</snap>
-                    {% render_field field spellcheck='false' %}
-                </label>
-                {% if field.errors and retrying %}
-                    {% for error in field.errors %}
-                        <div class="error-message">
-                            {{ error }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            </div>
+            {% if forloop.counter0 in indices %}
+                <div class="input-group">
+                    {{ field.label_tag }}
+                    <label for="id_{{ field.name }}" class="file-input-parent">
+                        <snap class="file-input-value help-text">Select a file</snap>
+                        {% render_field field spellcheck='false' %}
+                    </label>
+                    {% if field.errors and retrying %}
+                        {% for error in field.errors %}
+                            <div class="error-message">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            {% endif %}
         {% endfor %}
         <div class="input-group submit-input-group">
             <button type="button" class="secondary" onclick="location.href='{% url 'index' %}'">

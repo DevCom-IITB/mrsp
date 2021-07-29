@@ -170,18 +170,21 @@ class WaitlistApplicant(ApplicantBase):
 
         db_lock.obtain_lock()
 
-        waitlist_ahead = WaitlistApplicant.objects.filter(id__gt=self.id)
-        waitlist_t1, waitlist_mt = self.refresh_waitlist_mock()
-        waitlist_t1 += offset_t1
-        waitlist_mt += offset_mt
-        for row in waitlist_ahead:
-            if row.waitlist_t1 > 0:
-                waitlist_t1 += 1
-                row.waitlist_t1 = waitlist_t1
-            if row.waitlist_mt > 0:
-                waitlist_mt += 1
-                row.waitlist_mt = waitlist_mt
-            row.save()
+        try:
+            waitlist_ahead = WaitlistApplicant.objects.filter(id__gt=self.id)
+            waitlist_t1, waitlist_mt = self.refresh_waitlist_mock()
+            waitlist_t1 += offset_t1
+            waitlist_mt += offset_mt
+            for row in waitlist_ahead:
+                if row.waitlist_t1 > 0:
+                    waitlist_t1 += 1
+                    row.waitlist_t1 = waitlist_t1
+                if row.waitlist_mt > 0:
+                    waitlist_mt += 1
+                    row.waitlist_mt = waitlist_mt
+                row.save()
+        except:
+            pass
 
         db_lock.release_lock()
 

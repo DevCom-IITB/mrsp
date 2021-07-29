@@ -13,8 +13,11 @@ class PortalConfig(AppConfig):
         def update_expired_offers():
             for applicant in WaitlistApplicant.objects.all():
                 db_lock.obtain_lock()
-                if applicant.offer > 0 and applicant.get_offer_expiry_date() < datetime.date.today():
-                    applicant.decline_offer()
+                try:
+                    if applicant.offer > 0 and applicant.get_offer_expiry_date() < datetime.date.today():
+                        applicant.decline_offer()
+                except:
+                    pass
                 db_lock.release_lock()
 
         scheduler = BackgroundScheduler()

@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -115,3 +116,10 @@ STATIC_ROOT = BASE_DIR / 'generatedstaticfiles'
 MEDIA_ROOT = BASE_DIR / 'upload'
 
 LOGIN_URL = '/login/'
+
+EMAIL_HOST = 'smtp-auth.iitb.ac.in'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = os.getenv('MRSP_EMAIL_PASSWORD')
