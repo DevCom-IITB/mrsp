@@ -24,7 +24,7 @@ class ApplicantForm(forms.ModelForm):
         exclude = ['waitlist_t1', 'waitlist_mt', 'acad_verified',
                    'marriage_certificate_verified', 'photograph_verified', 'grade_sheet_verified',
                    'recommendation_verified', 'acad_feedback', 'hcu_feedback', 'offer', 'occupying',
-                   'offered_on', 'occupied_on', 'vacated', 'vacated_on', 'updated_form']
+                   'offered_on', 'occupied_on', 'vacated', 'vacated_on', 'form_updated']
         widgets = {
             'name': ReadonlyTextInput(),
             'roll_number': ReadonlyTextInput(),

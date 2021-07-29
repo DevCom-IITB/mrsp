@@ -106,7 +106,7 @@ def hcu_details(request):
             applicant.grade_sheet_verified = eval(request.POST.get('grade_sheet_verified'))
             applicant.recommendation_verified = eval(request.POST.get('recommendation_verified'))
             applicant.hcu_feedback = request.POST.get('hcu_feedback')
-            applicant.updated_form = False
+            applicant.form_updated = False
             applicant.save()
 
             print(applicant.get_status_id())

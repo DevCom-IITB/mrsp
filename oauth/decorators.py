@@ -1,8 +1,8 @@
 from django.shortcuts import redirect
 from django.urls import reverse
 
-acad_admins = ['acad']
-hcu_admins = ['hcu']
+acad_admins = ['misc.aracad4']
+hcu_admins = ['misc.hcu.office']
 
 
 def redirect_if_authenticated(fn):

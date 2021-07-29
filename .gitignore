@@ -5,3 +5,6 @@ mrsp.sock
 uwsgi_params
 mrsp/settings_prod.py
 upload/
+**/migrations
+**/__pycache__
+.idea

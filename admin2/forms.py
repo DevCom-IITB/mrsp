@@ -13,7 +13,7 @@ class ApplicantDetailsFormAcad(forms.ModelForm):
                    'marriage_certificate_verified', 'photograph_verified', 'grade_sheet_verified',
                    'recommendation_verified', 'occupying', 'offer', 'hcu_feedback', 'occupied_on',
                    'vacated', 'vacated_on', 'offered_on', 'marriage_certificate', 'photograph',
-                   'grade_sheet', 'recommendation']
+                   'grade_sheet', 'recommendation', 'form_updated']
 
 
 class HCUVerificationForm(forms.ModelForm):
@@ -54,4 +54,5 @@ class HCUApplicantDetailsForm(forms.ModelForm):
     class Meta:
         model = WaitlistApplicant
         exclude = ['acad_verified', 'marriage_certificate_verified', 'photograph_verified', 'grade_sheet_verified',
-                   'recommendation_verified', 'acad_feedback', 'hcu_feedback', 'offer', 'offered_on', 'occupying']
+                   'recommendation_verified', 'acad_feedback', 'hcu_feedback', 'offer', 'offered_on', 'occupying',
+                   'form_updated']

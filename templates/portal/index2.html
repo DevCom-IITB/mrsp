@@ -60,7 +60,7 @@
                                 </p>
                             </div>
                             <div class="input-group">
-                                {% if not instance.updated_form %}
+                                {% if not instance.form_updated %}
                                     <button class="fullwidth" type="button"
                                             onclick="location.href = '{% url 'edit_docs' %}'">Re-upload Documents
                                     </button>

@@ -1,3 +1,4 @@
+from django.contrib import admin
 from django.urls import path
 
 import portal.views
@@ -5,7 +6,7 @@ import oauth.views
 import admin2.views
 
 urlpatterns = [
-    # path('admin/', admin.site.urls),
+    path('admin/super', admin.site.urls),
     path('', portal.views.index, name='index'),
     path('login/', portal.views.login, name='login'),
     path('rules/', portal.views.rules, name='rules'),

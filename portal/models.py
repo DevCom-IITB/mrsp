@@ -12,31 +12,31 @@ class ApplicantBase(models.Model):
     def __str__(self):
         return self.roll_number
 
-    # name = models.CharField(max_length=128, default='')
+    name = models.CharField(max_length=128, default='')
     roll_number = models.CharField(max_length=15, unique=True)
-    # email = models.EmailField(max_length=128, default='')
-    # phone_number = models.CharField(max_length=10, validators=[RegexValidator(
-    #     regex='^[0-9]{10}$',
-    #     message='Enter a 10-digit number without the country code, e.g., 9876543210.'
-    # )], default='')
-    # department = models.CharField(max_length=128, help_text='Example: \'Electrical Engineering\'', default='')
-    # permanent_address = models.TextField(default='')
-    #
-    # fellowship = models.CharField(max_length=15, choices=[
-    #     ('Institute', 'Institute'),
-    #     ('CSIR', 'CSIR'),
-    #     ('UGC', 'UGC')
-    # ], default='', help_text='Select one.')
-    #
-    # fellowship_date = models.DateField(verbose_name='Date from which fellowship is awarded', null=True)
-    # course_work_completes_on = models.DateField(help_text='Enter the expected date.', null=True)
-    #
-    # spouse_name = models.CharField(max_length=128, default='')
-    # spouse_roll_number = models.CharField(max_length=128, help_text='Leave blank if inapplicable', blank=True,
-    #                                       null=True, default='')
-    # spouse_designation = models.CharField(max_length=128, help_text='Leave blank if inapplicable', blank=True,
-    #                                       null=True, default='')
-    #
+    email = models.EmailField(max_length=128, default='')
+    phone_number = models.CharField(max_length=10, validators=[RegexValidator(
+        regex='^[0-9]{10}$',
+        message='Enter a 10-digit number without the country code, e.g., 9876543210.'
+    )], default='')
+    department = models.CharField(max_length=128, help_text='Example: \'Electrical Engineering\'', default='')
+    permanent_address = models.TextField(default='')
+
+    fellowship = models.CharField(max_length=15, choices=[
+        ('Institute', 'Institute'),
+        ('CSIR', 'CSIR'),
+        ('UGC', 'UGC')
+    ], default='', help_text='Select one.')
+
+    fellowship_date = models.DateField(verbose_name='Date from which fellowship is awarded', null=True)
+    course_work_completes_on = models.DateField(help_text='Enter the expected date.', null=True)
+
+    spouse_name = models.CharField(max_length=128, default='')
+    spouse_roll_number = models.CharField(max_length=128, help_text='Leave blank if inapplicable', blank=True,
+                                          null=True, default='')
+    spouse_designation = models.CharField(max_length=128, help_text='Leave blank if inapplicable', blank=True,
+                                          null=True, default='')
+
     pdf_validator = FileExtensionValidator(allowed_extensions=['pdf'])
 
     marriage_certificate = models.FileField(upload_to='marriage_certificates/', default='',
@@ -85,7 +85,7 @@ class WaitlistApplicant(ApplicantBase):
     occupied_on = models.DateField(null=True)
     vacated_on = models.DateField(null=True)
 
-    updated_form = models.BooleanField(default=True)
+    form_updated = models.BooleanField(default=True)
 
     def all_verified(self):
         return self.acad_verified and self.marriage_certificate_verified and self.photograph_verified and self.grade_sheet_verified and self.recommendation_verified

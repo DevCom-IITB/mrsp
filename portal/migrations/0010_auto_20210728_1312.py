@@ -72,7 +72,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='waitlistapplicant',
-            name='updated_form',
+            name='form_updated',
             field=models.BooleanField(default=False),
         ),
     ]

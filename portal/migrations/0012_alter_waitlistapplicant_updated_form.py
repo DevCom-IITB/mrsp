@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterField(
             model_name='waitlistapplicant',
-            name='updated_form',
+            name='form_updated',
             field=models.BooleanField(default=True),
         ),
     ]

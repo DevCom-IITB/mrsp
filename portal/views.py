@@ -158,7 +158,7 @@ def edit_docs(request):
         form = EditDocsForm(instance=instance, files=request.FILES)
         if form.is_valid():
             form.save()
-            instance.updated_form = True
+            instance.form_updated = True
             instance.save()
             return redirect(reverse('index'))
         else:
