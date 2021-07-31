@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block acad_switch %}
-    {% if user.username == 'misc.mlc' %}
+    {% if user.username in supera_dmins %}
         <button class="secondary" type="button" onclick="location.href = '{% url 'admin_hcu' %}'">HCU Admin</button>
     {% endif %}
 {% endblock %}

@@ -8,7 +8,7 @@ from django.forms.models import model_to_dict
 from django.db.models import Q
 from .forms import ApplicantDetailsFormAcad, HCUVerificationForm, HCUSeatOfferForm, HCUApplicantDetailsForm
 
-from oauth.decorators import acad_only, hcu_only
+from oauth.decorators import acad_only, hcu_only, super_admins
 
 import datetime
 
@@ -18,7 +18,8 @@ import datetime
 def acad_admin(request):
     return render(request, 'admin2/acad.html', {
         'user': request.user,
-        'unverified_arr': WaitlistApplicant.objects.filter(acad_verified=False)
+        'unverified_arr': WaitlistApplicant.objects.filter(acad_verified=False),
+        'supera_dmins': super_admins
     })
 
 
@@ -36,7 +37,8 @@ def acad_details(request):
         form = ApplicantDetailsFormAcad(instance=applicant)
 
         return render(request, 'admin2/acad_details.html', {
-            'applicant': form
+            'applicant': form,
+            'supera_dmins': super_admins
         })
 
 
@@ -58,7 +60,8 @@ def hcu_admin(request):
     tab = int(request.GET.get('tab') or '1')
     return render(request, 'admin2/hcu.html', {
         'arr': arr[tab],
-        'tab': tab
+        'tab': tab,
+        'supera_dmins': super_admins
     })
 
 
@@ -82,7 +85,8 @@ def hcu_details(request):
             'expiry': applicant.get_offer_expiry_date() if applicant.offer != 0 else None,
             'status': [0, 3, 2, 2, 1, 2, 3, 2, 4][status_id],
             'currently_occupying': applicant.hostel_radio_choices[applicant.occupying][1],
-            'vacated': applicant.hostel_radio_choices[applicant.vacated][1]
+            'vacated': applicant.hostel_radio_choices[applicant.vacated][1],
+            'supera_dmins': super_admins
         })
 
     elif request.method == 'POST':

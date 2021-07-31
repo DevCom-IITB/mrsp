@@ -1,8 +1,9 @@
 from django.shortcuts import redirect
 from django.urls import reverse
 
-acad_admins = ['misc.aracad4', 'misc.mlc']
-hcu_admins = ['misc.hcu.office', 'misc.mlc']
+acad_admins = ['misc.aracad4']
+hcu_admins = ['misc.hcu.office']
+super_admins = ['misc.mlc']
 
 
 def redirect_if_authenticated(fn):
@@ -16,7 +17,7 @@ def redirect_if_authenticated(fn):
 
 def acad_only(fn):
     def check(request):
-        if request.user.username not in acad_admins:
+        if request.user.username not in acad_admins + super_admins:
             return redirect(reverse('index'))
         return fn(request)
 
@@ -25,7 +26,7 @@ def acad_only(fn):
 
 def hcu_only(fn):
     def check(request):
-        if request.user.username not in hcu_admins:
+        if request.user.username not in hcu_admins + super_admins:
             return redirect(reverse('index'))
         return fn(request)
 
@@ -34,9 +35,9 @@ def hcu_only(fn):
 
 def students_only(fn):
     def check(request):
-        if request.user.username in hcu_admins:
+        if request.user.username in hcu_admins + super_admins:
             return redirect(reverse('admin_hcu'))
-        if request.user.username in acad_admins:
+        if request.user.username in acad_admins + super_admins:
             return redirect(reverse('admin_acad'))
         return fn(request)
 
