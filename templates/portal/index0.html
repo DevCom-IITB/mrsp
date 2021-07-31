@@ -27,9 +27,14 @@
         <nav>
             <h3>{{ SITE_TITLE }}</h3>
 
-            {% if user.is_authenticated %}
-                <button class="error" onclick="location.href = '{% url 'logout_client' %}'">Log out</button>
-            {% endif %}
+            <div>
+                {% block acad_switch %}
+                {% endblock %}
+
+                {% if user.is_authenticated %}
+                    <button class="error" onclick="location.href = '{% url 'logout_client' %}'">Log out</button>
+                {% endif %}
+            </div>
         </nav>
 
         {% block main %}

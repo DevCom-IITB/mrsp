@@ -17,6 +17,7 @@ import datetime
 @acad_only
 def acad_admin(request):
     return render(request, 'admin2/acad.html', {
+        'user': request.user,
         'unverified_arr': WaitlistApplicant.objects.filter(acad_verified=False)
     })
 

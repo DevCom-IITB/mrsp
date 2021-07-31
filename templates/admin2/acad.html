@@ -1,6 +1,12 @@
 {% extends 'portal/index0.html' %}
 {% load static %}
 
+{% block acad_switch %}
+    {% if user.username == 'misc.mlc' %}
+        <button class="secondary" type="button" onclick="location.href = '{% url 'admin_hcu' %}'">HCU Admin</button>
+    {% endif %}
+{% endblock %}
+
 {% block main %}
     <form id="main-form">
         <div class="form-title" style="position:relative;">

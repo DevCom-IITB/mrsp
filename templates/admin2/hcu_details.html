@@ -2,6 +2,12 @@
 {% load widget_tweaks %}
 {% load static %}
 
+{% block acad_switch %}
+    {% if user.username == 'misc.mlc' %}
+        <button class="secondary" type="button" onclick="location.href = '{% url 'admin_acad' %}'">Acad Admin</button>
+    {% endif %}
+{% endblock %}
+
 {% block style %}
     <style>
         textarea {
