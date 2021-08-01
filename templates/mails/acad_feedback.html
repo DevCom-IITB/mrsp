@@ -1,0 +1,20 @@
+<div>
+    Dear {{ applicant.name }} ({{ applicant.roll_number }})
+    <br><br>
+
+    This is a system generated email. Please don't reply to this email.
+    <br><br>
+
+    You have received a negative feedback from the academic section, quote:
+    <br><br>
+
+    <strong>
+        {{ applicant.acad_feedback|linebreaks }}
+    </strong>
+    <br>
+
+    Kindly reapply through the MRSP portal in order to rectify your application.
+    <br><br>
+
+    --End--
+</div>

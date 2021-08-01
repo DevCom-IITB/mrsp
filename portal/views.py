@@ -7,6 +7,8 @@ from oauth.decorators import redirect_if_authenticated, students_only
 from .models import WaitlistApplicant
 import datetime
 
+from .mails import mail_registered, mail_occupied, mail_vacated
+
 lock = False
 
 
@@ -18,7 +20,6 @@ def login(request):
 @login_required
 @students_only
 def index(request):
-    print(request.user.username)
     try:
         applicant = WaitlistApplicant.objects.get(roll_number=str(request.user.username))
     except ObjectDoesNotExist:
@@ -44,6 +45,8 @@ def index(request):
                 applicant.save()
                 applicant.refresh_waitlist_ahead(-1, -1)
 
+            mail_occupied(applicant)
+
         elif request.POST.get('post') == 'vacate':
             applicant.vacated = applicant.occupying
             applicant.vacated_on = datetime.date.today()
@@ -59,6 +62,8 @@ def index(request):
             applicant.delete()
             applicant.id = None
             applicant.save()
+
+            mail_vacated(applicant)
 
         elif request.POST.get('post') == 'reapply':
             applicant.offer = applicant.occupying = applicant.vacated = 0
@@ -123,6 +128,7 @@ def apply(request):
             instance.delete()
         if form.is_valid():
             form.instance.save()
+            mail_registered(applicant=form.instance)
             return redirect(reverse('thanks'))
         else:
             instance.save()
@@ -159,8 +165,6 @@ def edit_docs(request):
         return redirect(reverse('index'))
 
     form = EditDocsForm(instance=instance)
-
-    print(model_to_dict(form.instance))
 
     if request.method == 'POST':
         form = EditDocsForm(instance=instance, files=request.FILES)

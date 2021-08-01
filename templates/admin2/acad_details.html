@@ -2,7 +2,7 @@
 {% load widget_tweaks %}
 
 {% block acad_switch %}
-    {% if user.username in supera_dmins %}
+    {% if user.username in super_admins %}
         <button class="secondary" type="button" onclick="location.href = '{% url 'admin_hcu' %}'">HCU Admin</button>
     {% endif %}
 {% endblock %}

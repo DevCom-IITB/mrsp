@@ -1,0 +1,30 @@
+<div>
+    Dear {{ applicant.name }} ({{ applicant.roll_number }})
+    <br><br>
+
+    This is a system generated email. Please don't reply to this email.
+    <br><br>
+
+    Your academic details and accompanying documents have been verified. Following are your
+    initial ranks in the two waitlists for Type 1 accommodation and Manas/Tulsi respectively.
+    <br><br>
+
+    <table>
+        <tr>
+            <td>Type 1</td>
+            <td>&nbsp; : &nbsp;</td>
+            <td>{{ applicant.waitlist_t1 }}</td>
+        </tr>
+        <tr>
+            <td>Manas/Tulsi</td>
+            <td>&nbsp; : &nbsp;</td>
+            <td>{{ applicant.waitlist_mt }}</td>
+        </tr>
+    </table>
+    <br>
+
+    Kindly visit the MRSP portal for further updates in the waitlists.
+    <br><br>
+
+    --End--
+</div>

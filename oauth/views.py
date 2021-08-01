@@ -32,8 +32,6 @@ def login_client(request):
     data_uri = f'code={auth_code}&redirect_uri={settings.REDIRECT_URI}&grant_type=authorization_code'
     response = requests.post(settings.SSO_TOKEN_URL, data=data_uri, headers=headers).json()
 
-    print(response)
-
     profile = requests.get(
         settings.SSO_PROFILE_URL,
         headers={

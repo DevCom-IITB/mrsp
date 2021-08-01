@@ -9,6 +9,7 @@ from django.db.models import Q
 from .forms import ApplicantDetailsFormAcad, HCUVerificationForm, HCUSeatOfferForm, HCUApplicantDetailsForm
 
 from oauth.decorators import acad_only, hcu_only, super_admins
+from portal.mails import mail_waitlisted, mail_shortlisted, mail_hcu_feedback, mail_acad_feedback
 
 import datetime
 
@@ -19,7 +20,7 @@ def acad_admin(request):
     return render(request, 'admin2/acad.html', {
         'user': request.user,
         'unverified_arr': WaitlistApplicant.objects.filter(acad_verified=False),
-        'supera_dmins': super_admins
+        'super_admins': super_admins
     })
 
 
@@ -30,7 +31,12 @@ def acad_details(request):
         applicant = WaitlistApplicant.objects.get(id=request.POST.get('id'))
         applicant.acad_feedback = request.POST.get('acad_feedback')
         applicant.acad_verified = request.POST.get('verification_status') == 'verified'
+
         applicant.save()
+
+        if not applicant.acad_verified and applicant.acad_feedback:
+            mail_acad_feedback(applicant)
+
         return redirect(reverse('admin_acad'))
     else:
         applicant = WaitlistApplicant.objects.get(roll_number=request.GET.get('roll_number'))
@@ -38,7 +44,7 @@ def acad_details(request):
 
         return render(request, 'admin2/acad_details.html', {
             'applicant': form,
-            'supera_dmins': super_admins
+            'super_admins': super_admins
         })
 
 
@@ -61,7 +67,7 @@ def hcu_admin(request):
     return render(request, 'admin2/hcu.html', {
         'arr': arr[tab],
         'tab': tab,
-        'supera_dmins': super_admins
+        'super_admins': super_admins
     })
 
 
@@ -86,7 +92,7 @@ def hcu_details(request):
             'status': [0, 3, 2, 2, 1, 2, 3, 2, 4][status_id],
             'currently_occupying': applicant.hostel_radio_choices[applicant.occupying][1],
             'vacated': applicant.hostel_radio_choices[applicant.vacated][1],
-            'supera_dmins': super_admins
+            'super_admins': super_admins
         })
 
     elif request.method == 'POST':
@@ -95,15 +101,15 @@ def hcu_details(request):
         status = request.POST.get('status')
         applicant = WaitlistApplicant.objects.get(id=applicant_id)
 
-        if request.POST.get('file_index'):
-            file = [applicant.marriage_certificate, applicant.photograph,
-                    applicant.grade_sheet, applicant.recommendation][int(request.POST.get('file_index'))]
-
-            filename = file.name.split('/')[-1]
-            response = HttpResponse(file.file, content_type='text/plain')
-            response['Content-Disposition'] = 'attachment; filename=%s' % filename
-
-            return response
+        # if request.POST.get('file_index'):
+        #     file = [applicant.marriage_certificate, applicant.photograph,
+        #             applicant.grade_sheet, applicant.recommendation][int(request.POST.get('file_index'))]
+        #
+        #     filename = file.name.split('/')[-1]
+        #     response = HttpResponse(file.file, content_type='text/plain')
+        #     response['Content-Disposition'] = 'attachment; filename=%s' % filename
+        #
+        #     return response
 
         if status == '1':
             applicant.marriage_certificate_verified = eval(request.POST.get('marriage_certificate_verified'))
@@ -114,21 +120,18 @@ def hcu_details(request):
             applicant.form_updated = False
             applicant.save()
 
-            print(applicant.get_status_id())
-
-            print(applicant.marriage_certificate_verified)
-            print(applicant.photograph_verified)
-            print(applicant.grade_sheet_verified)
-            print(applicant.recommendation_verified)
-
             if applicant.get_status_id() == 3:
                 applicant.refresh_waitlist()
                 applicant.refresh_waitlist_ahead(0, 0)
+                mail_waitlisted(applicant)
+            elif applicant.hcu_feedback:
+                mail_hcu_feedback(applicant)
 
         elif status == '2':
             applicant.offer = request.POST.get('offer')
             applicant.offered_on = datetime.date.today()
             applicant.save()
+            mail_shortlisted(applicant)
 
         return redirect("admin_hcu")
 

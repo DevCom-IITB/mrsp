@@ -1,0 +1,20 @@
+<div>
+    Dear {{ applicant.name }} ({{ applicant.roll_number }})
+    <br><br>
+
+    This is a system generated email. Please don't reply to this email.
+    <br><br>
+
+    You have received a negative feedback from the HCU Office, quote:
+    <br><br>
+
+    <strong>
+        {{ applicant.hcu_feedback|linebreaks }}
+    </strong>
+    <br>
+
+    Kindly (re)upload the required/invalid documents to further your application.
+    <br><br>
+
+    --End--
+</div>
