@@ -126,12 +126,13 @@ def apply(request):
     if request.method == 'POST':
         if instance:
             instance.delete()
-        if form.is_valid():
-            form.instance.save()
-            mail_registered(applicant=form.instance)
-            return redirect(reverse('thanks'))
+            if not form.is_valid():
+                instance.save()
         else:
-            instance.save()
+            if form.is_valid():
+                form.instance.save()
+                mail_registered(applicant=form.instance)
+                return redirect(reverse('thanks'))
 
     return render(request, 'portal/form.html', {
         'form': form,
