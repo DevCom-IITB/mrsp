@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -8,12 +9,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'iga!g=8fyf)=8m3-*b=e30w=vhp7g+^6l&&d*cpyx3koh!sbcp'
+SECRET_KEY = config("SECRET_KEY") 
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["0.0.0.0", "127.0.0.1", "gymkhana.iitb.ac.in"]
+
 
 # Application definition
 
@@ -41,7 +43,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'mrsp.urls'
-
+#FORCE_SCRIPT_NAME = '/mrsp/'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -65,12 +67,13 @@ WSGI_APPLICATION = 'mrsp.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'MRSP_test',
+        'USER':config('DB_USER'), 
+	'PASSWORD': config("DB_PASSWD"), 
+	'HOST':'mysql',
     }
 }
-
-DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -106,21 +109,24 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = '/mrsp/static/'
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+#STATICFILES_DIRS = [
+ #   BASE_DIR / 'static'
+#]
+USE_X_FORWARDED_HOST = True
+USE_X_FORWARDED_PORT = True
+#FORCE_SCRIPT_NAME = '/mrsp'
 
-STATICFILES_DIRS = [
-    BASE_DIR / 'static'
-]
-
-STATIC_ROOT = BASE_DIR / 'generatedstaticfiles'
-MEDIA_ROOT = BASE_DIR / 'upload'
-
-LOGIN_URL = '/login/'
-
+STATIC_ROOT = os.path.join(BASE_DIR, "mrsp/static/")
+#MEDIA_ROOT = BASE_DIR / 'upload'
+MEDIA_ROOT = os.path.join(BASE_DIR, "upload/")
+LOGIN_URL = '/mrsp/login/'
 EMAIL_HOST = 'smtp-auth.iitb.ac.in'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-DEFAULT_FROM_EMAIL = '190050025@iitb.ac.in'
-EMAIL_HOST_USER = '190050025'
-EMAIL_HOST_PASSWORD = os.environ.get('MRSP_EMAIL_PASSWORD')
+DEFAULT_FROM_EMAIL = config("EMAIL_ID")
+EMAIL_HOST_USER = config("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWD")
+

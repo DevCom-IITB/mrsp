@@ -1,3 +1,4 @@
+.env
 db.sqlite3
 log.txt
 mrspenv/
@@ -5,6 +6,11 @@ mrsp.sock
 uwsgi_params
 mrsp/settings_prod.py
 upload/
-**/migrations
-**/__pycache__
+**/migrations/
+**/__pycache__/
+__pycache__/
 .idea
+gunicorn.service
+gunicorn.socket
+mrsp.conf
+mrsp/settings_old.py

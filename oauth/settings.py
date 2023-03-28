@@ -1,6 +1,6 @@
 AUTHORIZATION_URL = 'https://gymkhana.iitb.ac.in/sso/oauth/authorize/'
 
-REDIRECT_URI = 'http://127.0.0.1:8000/oauth/callback/'
+REDIRECT_URI = 'https://gymkhana.iitb.ac.in/mrsp/oauth/callback/'
 
 CLIENT_ID = 'ohRIIM0R1kEIxHOu67RgAvp3i2HkGEyYteQ40N1b'
 
