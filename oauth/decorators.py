@@ -1,9 +1,10 @@
 from django.shortcuts import redirect
 from django.urls import reverse
+from decouple import config,Csv
 
-acad_admins = ['misc.aracad4']
-hcu_admins = ['misc.hcu.office','I97073']
-super_admins = ['misc.mlc','misc.arhcu','misc.adean.sa']
+acad_admins = config('ACAD_ADMINS',cast=Csv())
+hcu_admins = config('HCU_ADMINS',cast=Csv())
+super_admins = config('SUPER_ADMINS',cast=Csv())
 
 
 def redirect_if_authenticated(fn):

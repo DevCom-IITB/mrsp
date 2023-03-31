@@ -81,9 +81,9 @@ class WaitlistApplicant(ApplicantBase):
     occupying = models.IntegerField(default=0, choices=hostel_radio_choices)
     vacated = models.IntegerField(default=0, choices=hostel_radio_choices)
 
-    offered_on = models.DateField(null=True)
-    occupied_on = models.DateField(null=True)
-    vacated_on = models.DateField(null=True)
+    offered_on = models.DateField(null=True,blank=True)
+    occupied_on = models.DateField(null=True,blank=True)
+    vacated_on = models.DateField(null=True,blank=True)
 
     form_updated = models.BooleanField(default=True)
 

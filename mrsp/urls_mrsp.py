@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.urls import path
+from django.conf.urls.static import static
+from django.conf import settings
 
 import portal.views
 import oauth.views
@@ -28,3 +30,4 @@ urlpatterns = [
 
     path('mrsp/admin/file', admin2.views.view_file, name='admin_view_file')
 ]
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

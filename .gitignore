@@ -2,6 +2,7 @@
 db.sqlite3
 log.txt
 mrspenv/
+env/
 mrsp.sock
 uwsgi_params
 mrsp/settings_prod.py
@@ -14,3 +15,5 @@ gunicorn.service
 gunicorn.socket
 mrsp.conf
 mrsp/settings_old.py
+static/admin/
+db.sqlite3
