@@ -12,6 +12,7 @@ class ApplicantBase(models.Model):
     def __str__(self):
         return self.roll_number
 
+    application_date = models.DateTimeField(null=True,blank=True)
     name = models.CharField(max_length=128, default='')
     roll_number = models.CharField(max_length=15, unique=True)
     email = models.EmailField(max_length=128, default='')
@@ -59,7 +60,7 @@ class WaitlistApplicant(ApplicantBase):
     # -1 = removed/not applied; -2 = prompted; 0 = occupied
     waitlist_mt = models.IntegerField(default=-1, verbose_name='Waitlist Number (Manas-Tulsi)')
 
-    acad_verified = models.BooleanField(default=False)
+    acad_verified = models.BooleanField(default=True)
     marriage_certificate_verified = models.BooleanField(default=False,
                                                         choices=((True, 'Verified'), (False, 'Not verified')),
                                                         verbose_name='Marriage Certificate')
@@ -86,6 +87,16 @@ class WaitlistApplicant(ApplicantBase):
     vacated_on = models.DateField(null=True,blank=True)
 
     form_updated = models.BooleanField(default=True)
+
+    @property
+    def vacating_date(self):
+        deadline1 = self.fellowship_date + datetime.timedelta(days=2192) 
+        deadline2 = self.occupied_on + datetime.timedelta(days=1096)
+        return deadline1 if deadline1<deadline2 else deadline2
+
+    @property
+    def occupying_building(self):
+        return self.hostel_radio_choices[self.occupying][1]
 
     def all_verified(self):
         return self.acad_verified and self.marriage_certificate_verified and self.photograph_verified and self.grade_sheet_verified and self.recommendation_verified

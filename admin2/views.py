@@ -55,8 +55,8 @@ def hcu_admin(request):
         (Q(marriage_certificate_verified=False) | Q(photograph_verified=False) | Q(grade_sheet_verified=False)
          | Q(recommendation_verified=False)) & Q(acad_verified=True)),
 
-        WaitlistApplicant.objects.filter(Q(waitlist_t1__gt=0) | Q(waitlist_mt__gt=0)),
-
+        WaitlistApplicant.objects.filter(Q(waitlist_t1__gt=0)),
+        WaitlistApplicant.objects.filter(Q(waitlist_mt__gt=0)),
         WaitlistApplicant.objects.filter(Q(occupying=1) & Q(acad_verified=True)),
         WaitlistApplicant.objects.filter(Q(occupying=2) & Q(acad_verified=True)),
         WaitlistApplicant.objects.filter(Q(occupying=3) & Q(acad_verified=True)),

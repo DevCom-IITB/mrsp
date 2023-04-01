@@ -19,26 +19,30 @@
                        {% if tab == 0 %}checked{% endif %}>
                 <label for="tab-unverified" class="checkbox-label"
                        onclick="location.href='{% url 'admin_hcu' %}?tab=0'">Unverified</label>
-                <input value="1" type="radio" id="tab-waitlist"
+                <input value="1" type="radio" id="tab-waitlist-t1"
                        {% if tab == 1 %}checked{% endif %}>
-                <label for="tab-waitlist" class="checkbox-label"
-                       onclick="location.href='{% url 'admin_hcu' %}?tab=1'">Waitlist</label>
-                <input value="2" type="radio" id="tab-occupied-t1"
+                <label for="tab-waitlist-t1" class="checkbox-label"
+                       onclick="location.href='{% url 'admin_hcu' %}?tab=1'">Waitlist - Type I</label>
+                <input value="2" type="radio" id="tab-waitlist-mt"
                        {% if tab == 2 %}checked{% endif %}>
-                <label for="tab-occupied-t1" class="checkbox-label"
-                       onclick="location.href='{% url 'admin_hcu' %}?tab=2'">Occupied Type 1</label>
-                <input value="3" type="radio" id="tab-occupied-manas"
+                <label for="tab-waitlist-mt" class="checkbox-label"
+                       onclick="location.href='{% url 'admin_hcu' %}?tab=2'">Waitlist - Manas & Tulsi</label>
+                <input value="3" type="radio" id="tab-occupied-t1"
                        {% if tab == 3 %}checked{% endif %}>
-                <label for="tab-occupied-manas" class="checkbox-label"
-                       onclick="location.href='{% url 'admin_hcu' %}?tab=3'">Occupied Manas</label>
-                <input value="4" type="radio" id="tab-occupied-tulsi"
+                <label for="tab-occupied-t1" class="checkbox-label"
+                       onclick="location.href='{% url 'admin_hcu' %}?tab=3'">Occupied Type 1</label>
+                <input value="4" type="radio" id="tab-occupied-manas"
                        {% if tab == 4 %}checked{% endif %}>
-                <label for="tab-occupied-tulsi" class="checkbox-label"
-                       onclick="location.href='{% url 'admin_hcu' %}?tab=4'">Occupied Tulsi</label>
-                <input value="5" type="radio" id="tab-all"
+                <label for="tab-occupied-manas" class="checkbox-label"
+                       onclick="location.href='{% url 'admin_hcu' %}?tab=4'">Occupied Manas</label>
+                <input value="5" type="radio" id="tab-occupied-tulsi"
                        {% if tab == 5 %}checked{% endif %}>
+                <label for="tab-occupied-tulsi" class="checkbox-label"
+                       onclick="location.href='{% url 'admin_hcu' %}?tab=5'">Occupied Tulsi</label>
+                <input value="6" type="radio" id="tab-all"
+                       {% if tab == 6 %}checked{% endif %}>
                 <label for="tab-all" class="checkbox-label"
-                       onclick="location.href='{% url 'admin_hcu' %}?tab=5'">Vacated</label>
+                       onclick="location.href='{% url 'admin_hcu' %}?tab=6'">Vacated</label>
             </div>
         </div>
 

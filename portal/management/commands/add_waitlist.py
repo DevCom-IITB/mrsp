@@ -14,9 +14,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         data_file = Path(options["file-path"][0]).resolve()
-        building = options['building'][0]
-        print(building)
-        building_mapping = {'Type1':1,'Manas':2,'Tulse':3}
 
         if not data_file.exists():
             raise ValueError("File Does Not Exist")
@@ -30,20 +27,17 @@ class Command(BaseCommand):
                 roll = str(row['roll'])
             try:
                 applicant = WaitlistApplicant(
+                    application_date=datetime.datetime.strptime(row['application date'],'%d-%m-%y'),
                     name=row['name'],
                     roll_number=roll,
-                    department=str(row['dept']).upper(),
                     fellowship_date=datetime.datetime.strptime(row['reg date'],'%d-%m-%y'),
-                    waitlist_t1 = -1 if building!="Type1" else 0,
-                    waitlist_mt = -1 if building=="Type1" else 0,
+                    waitlist_t1 = int(row['waitlist_t1']),
+                    waitlist_mt = int(row['waitlist_mt']),
                     acad_verified=True,
                     marriage_certificate_verified=True,
                     photograph_verified=True,
                     grade_sheet_verified=True,
                     recommendation_verified=True,
-                    offer=building_mapping[building],
-                    occupying=building_mapping[building],
-                    occupied_on=datetime.datetime.strptime(row['start date'],'%d-%m-%y')
                 )
                 applicant.save()
             except Exception as e:
