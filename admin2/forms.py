@@ -9,7 +9,7 @@ class ApplicantDetailsFormAcad(forms.ModelForm):
 
     class Meta:
         model = WaitlistApplicant
-        exclude = ['waitlist_t1', 'waitlist_mt', 'acad_verified',
+        exclude = ['waitlist_t1', 'waitlist_m', 'waitlist_t', 'acad_verified',
                    'marriage_certificate_verified', 'photograph_verified', 'grade_sheet_verified',
                    'recommendation_verified', 'occupying', 'offer', 'hcu_feedback', 'occupied_on',
                    'vacated', 'vacated_on', 'offered_on', 'marriage_certificate', 'photograph',

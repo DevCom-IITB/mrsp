@@ -21,7 +21,7 @@ class ApplicantForm(forms.ModelForm):
     class Meta:
         model = WaitlistApplicant
         fields = '__all__'
-        exclude = ['waitlist_t1', 'waitlist_mt', 'acad_verified',
+        exclude = ['waitlist_t1', 'waitlist_m', 'waitlist_t', 'acad_verified',
                    'marriage_certificate_verified', 'photograph_verified', 'grade_sheet_verified',
                    'recommendation_verified', 'acad_feedback', 'hcu_feedback', 'offer', 'occupying',
                    'offered_on', 'occupied_on', 'vacated', 'vacated_on', 'form_updated']

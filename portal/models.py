@@ -12,7 +12,7 @@ class ApplicantBase(models.Model):
     def __str__(self):
         return self.roll_number
 
-    application_date = models.DateTimeField(null=True,blank=True)
+    application_date = models.DateTimeField(null=True,blank=True, auto_now_add=True)
     name = models.CharField(max_length=128, default='')
     roll_number = models.CharField(max_length=15, unique=True)
     email = models.EmailField(max_length=128, default='')
@@ -54,11 +54,12 @@ class ApplicantBase(models.Model):
 class WaitlistApplicant(ApplicantBase):
     class Meta:
         abstract = False
-
+    
     waitlist_t1 = models.IntegerField(default=-1,
                                       verbose_name='Waitlist Number (Type 1)')
-    # -1 = removed/not applied; -2 = prompted; 0 = occupied
-    waitlist_mt = models.IntegerField(default=-1, verbose_name='Waitlist Number (Manas-Tulsi)')
+    # -1 = removed/not applied; -2 = prompted; 0 = occupied; -3 = vacated
+    waitlist_m = models.IntegerField(default=-1, verbose_name='Waitlist Number (Manas)')
+    waitlist_t = models.IntegerField(default=-1, verbose_name='Waitlist Number (Tulsi)')
 
     acad_verified = models.BooleanField(default=True)
     marriage_certificate_verified = models.BooleanField(default=False,
@@ -90,9 +91,12 @@ class WaitlistApplicant(ApplicantBase):
 
     @property
     def vacating_date(self):
-        deadline1 = self.fellowship_date + datetime.timedelta(days=2192) 
-        deadline2 = self.occupied_on + datetime.timedelta(days=1096)
-        return deadline1 if deadline1<deadline2 else deadline2
+        try : 
+            deadline1 = self.fellowship_date + datetime.timedelta(days=2192) 
+            deadline2 = self.occupied_on + datetime.timedelta(days=1096)
+            return deadline1 if deadline1<deadline2 else deadline2
+        except:
+            pass
 
     @property
     def occupying_building(self):
@@ -101,9 +105,10 @@ class WaitlistApplicant(ApplicantBase):
     def all_verified(self):
         return self.acad_verified and self.marriage_certificate_verified and self.photograph_verified and self.grade_sheet_verified and self.recommendation_verified
 
+    # this function performs the following tasks: it updates the waitlist numbers of all the applicants, by checking the,     
     def refresh_waitlist_mock(self):
         if not self.all_verified():
-            return -1, -1
+            return -1, -1, -1
 
         if self.pk is None:
             ls = reversed(WaitlistApplicant.objects.all())
@@ -111,33 +116,39 @@ class WaitlistApplicant(ApplicantBase):
             ls = reversed(WaitlistApplicant.objects.filter(id__lt=self.id))
 
         waitlist_t1 = 1
-        waitlist_mt = 1
+        waitlist_m = 1
+        waitlist_t = 1
 
         t1_set = False
         t2_set = False
+        t3_set = False
         for prev_instance in ls:
             if prev_instance.waitlist_t1 > 0 and not t1_set:
                 waitlist_t1 = prev_instance.waitlist_t1 + 1
                 t1_set = True
-            if prev_instance.waitlist_mt > 0 and not t2_set:
-                waitlist_mt = prev_instance.waitlist_mt + 1
+            if prev_instance.waitlist_t > 0 and not t2_set:
+                waitlist_t = prev_instance.waitlist_t + 1
                 t2_set = True
-            if t1_set and t2_set:
+            if prev_instance.waitlist_m > 0 and not t3_set:
+                waitlist_m = prev_instance.waitlist_m + 1
+                t3_set = True
+            if t1_set and t2_set and t3_set:
                 break
 
-        return waitlist_t1, waitlist_mt
+        return waitlist_t1, waitlist_m, waitlist_t
 
     def refresh_waitlist(self):
-        self.waitlist_t1, self.waitlist_mt = self.refresh_waitlist_mock()
+        self.waitlist_t1, self.waitlist_m, self.waitlist_t = self.refresh_waitlist_mock()
         self.save()
 
     def get_status_id(self):
         if not self.acad_verified:
             return 0
 
+        # occupying>0 tells that the user is living in atleast one of the 3 choices
         if self.occupying > 0:
-            if self.occupying == 1:
-                if self.waitlist_mt == -2:
+            if self.occupying == 1: # occupying == 1 tells that the user is currently occupying t1
+                if  self.waitlist_m == -2 or self.waitlist_t == -2: # this tell that the user is prompted to occupy either of manas or tulsi whih i have to change now( i am not sure if the cahnges made by me are correct as of now will change it later if i feel any changes are needed)
                     return 6
                 else:
                     return 5
@@ -177,22 +188,46 @@ class WaitlistApplicant(ApplicantBase):
         except TypeError:
             return None
 
-    def refresh_waitlist_ahead(self, offset_t1, offset_mt):
+    def refresh_waitlist_ahead(self, offset_t1, offset_m, offset_t):
 
         db_lock.obtain_lock()
 
         try:
             waitlist_ahead = WaitlistApplicant.objects.filter(id__gt=self.id)
-            waitlist_t1, waitlist_mt = self.refresh_waitlist_mock()
-            waitlist_t1 += offset_t1
-            waitlist_mt += offset_mt
+            # waitlist_t1, waitlist_m, waitlist_t = self.refresh_waitlist_mock()
+            # waitlist_t1 += offset_t1
+            # waitlist_m += offset_m
+            # waitlist_t += offset_t
+            for row in waitlist_ahead:
+                if row.waitlist_t1 > 1:
+                    row.waitlist_t1 += offset_t1
+                if row.waitlist_t > 1:
+                    row.waitlist_t += offset_t
+                if row.waitlist_m > 1:
+                    row.waitlist_m += offset_m
+                row.save()
+        except:
+            pass
+
+        db_lock.release_lock()
+
+    def refresh_waitlist_behind(self, offset_t1, offset_m, offset_t):
+
+        db_lock.obtain_lock()
+
+        try:
+            waitlist_ahead = WaitlistApplicant.objects.filter(id__gt=self.id)
+            # waitlist_t1, waitlist_m, waitlist_t = self.refresh_waitlist_mock()
+            # waitlist_t1 += offset_t1
+            # waitlist_m += offset_m
+            # waitlist_t += offset_t
             for row in waitlist_ahead:
                 if row.waitlist_t1 > 0:
-                    waitlist_t1 += 1
-                    row.waitlist_t1 = waitlist_t1
-                if row.waitlist_mt > 0:
-                    waitlist_mt += 1
-                    row.waitlist_mt = waitlist_mt
+                    row.waitlist_t1 += offset_t1
+                if row.waitlist_t > 0:
+                    row.waitlist_t += offset_t
+                if row.waitlist_m > 0:
+                    row.waitlist_m += offset_m
                 row.save()
         except:
             pass
@@ -204,15 +239,14 @@ class WaitlistApplicant(ApplicantBase):
             self.waitlist_t1 = -2
             self.offer = 0
             self.save()
-            self.refresh_waitlist_ahead(-1, 0)
-        elif self.offer > 1:
+            self.refresh_waitlist_ahead(-1, 0, 0)
+        elif self.offer == 2:
+            self.waitlist_m = -2
             self.offer = 0
-            if self.occupying != 1:
-                self.waitlist_mt = self.waitlist_t1 = -2
-                self.refresh_waitlist_ahead(-1, -1)
-                self.delete()
-                self.id = None
-            else:
-                self.waitlist_mt = -2
-                self.refresh_waitlist_ahead(0, -1)
             self.save()
+            self.refresh_waitlist_ahead(0, -1, 0)
+        elif self.offer == 3:
+            self.waitlist_t = -2
+            self.offer = 0
+            self.save()
+            self.refresh_waitlist_ahead(0, 0, -1)

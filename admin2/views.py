@@ -56,12 +56,13 @@ def hcu_admin(request):
          | Q(recommendation_verified=False)) & Q(acad_verified=True)),
 
         WaitlistApplicant.objects.filter(Q(waitlist_t1__gt=0)),
-        WaitlistApplicant.objects.filter(Q(waitlist_mt__gt=0)),
+        WaitlistApplicant.objects.filter(Q(waitlist_m__gt=0)),
+        WaitlistApplicant.objects.filter(Q(waitlist_t__gt=0)),
         WaitlistApplicant.objects.filter(Q(occupying=1) & Q(acad_verified=True)),
         WaitlistApplicant.objects.filter(Q(occupying=2) & Q(acad_verified=True)),
         WaitlistApplicant.objects.filter(Q(occupying=3) & Q(acad_verified=True)),
 
-        WaitlistApplicant.objects.filter(Q(waitlist_t1=-3) | Q(waitlist_mt=-3))]
+        WaitlistApplicant.objects.filter(Q(waitlist_t1=-3) |  Q(waitlist_m=-3) | Q(waitlist_t=-3))]
 
     tab = int(request.GET.get('tab') or '1')
     return render(request, 'admin2/hcu.html', {
@@ -85,7 +86,7 @@ def hcu_details(request):
         return render(request, 'admin2/hcu_details.html', {
             'instance': applicant,
             'details_form': details_form,
-            'positive_only': ['waitlist_t1', 'waitlist_mt'],
+            'positive_only': ['waitlist_t1', 'waitlist_m', 'waitlist_t'],
             'verification_form': verification_form,
             'seat_form': seat_form,
             'expiry': applicant.get_offer_expiry_date() if applicant.offer != 0 else None,
@@ -122,7 +123,7 @@ def hcu_details(request):
 
             if applicant.get_status_id() == 3:
                 applicant.refresh_waitlist()
-                applicant.refresh_waitlist_ahead(0, 0)
+                applicant.refresh_waitlist_ahead(0, 0, 0)
                 mail_waitlisted(applicant)
             elif applicant.hcu_feedback:
                 mail_hcu_feedback(applicant)

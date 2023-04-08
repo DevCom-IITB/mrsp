@@ -37,14 +37,23 @@ def index(request):
             applicant.offer = 0
             if applicant.occupying == 1:
                 applicant.waitlist_t1 = 0
+                applicant.waitlist_t = -1
+                applicant.waitlist_m = -1
                 applicant.save()
-                applicant.refresh_waitlist_ahead(-1, 0)
-            elif applicant.occupying > 1:
+                
+            elif applicant.occupying == 2 :
                 applicant.waitlist_t1 = -1
-                applicant.waitlist_mt = 0
+                applicant.waitlist_m = 0
+                applicant.waitlist_t = -1
                 applicant.save()
-                applicant.refresh_waitlist_ahead(-1, -1)
-
+                #applicant.refresh_waitlist_ahead(0, -1, 0)
+            elif applicant.occupying ==3 :
+                applicant.waitlist_t1 = -1
+                applicant.waitlist_t = 0
+                applicant.waitlist_m = -1
+                applicant.save()
+                #applicant.refresh_waitlist_ahead(0, 0, -1)
+            applicant.refresh_waitlist_ahead(-1, -1, -1)
             mail_occupied(applicant)
 
         elif request.POST.get('post') == 'vacate':
@@ -52,23 +61,30 @@ def index(request):
             applicant.vacated_on = datetime.date.today()
             if applicant.occupying == 1:
                 applicant.waitlist_t1 = -3
-            else:
-                applicant.waitlist_mt = -3
+                applicant.refresh_waitlist_behind(0,+1,+1)
+                applicant.waitlist_m = 1
+                applicant.waitlist_t = 1
+            elif applicant.occupying == 2:
+                applicant.waitlist_m = -3
+                applicant.refresh_waitlist_behind(+1,0,+1)
+                applicant.waitlist_t1 = 1
+                applicant.waitlist_t = 1
+            elif applicant.occupying == 3:
+                applicant.waitlist_t = -3
+                applicant.refresh_waitlist_behind(+1,+1,0)
+                applicant.waitlist_m = 1
+                applicant.waitlist_t1 = 1
             applicant.occupying = 0
-            if applicant.waitlist_mt > 0:
-                applicant.refresh_waitlist_ahead(-1, 0)
-            else:
-                applicant.refresh_waitlist_ahead(-1, -1)
             applicant.delete()
-            applicant.id = None
-            applicant.save()
+            # applicant.id = None
+            #applicant.save()
 
-            mail_vacated(applicant)
+            #mail_vacated(applicant)
 
         elif request.POST.get('post') == 'reapply':
             applicant.offer = applicant.occupying = applicant.vacated = 0
             applicant.refresh_waitlist()
-            applicant.refresh_waitlist_ahead(0, 0)
+            applicant.refresh_waitlist_ahead(0, 0, 0)
 
         return redirect(reverse('index'))
     else:
@@ -104,7 +120,7 @@ def thanks(request):
 def apply(request):
     try:
         instance = WaitlistApplicant.objects.get(roll_number=request.user.username)
-        if (instance.vacated == 0 and instance.waitlist_mt > -2) and (
+        if (instance.vacated == 0 and (instance.waitlist_m > -2 or instance.waitlist_t > -2)) and (
                 instance.acad_verified or instance.acad_feedback == ''):
             return redirect(reverse('index'))
     except ObjectDoesNotExist:
@@ -125,7 +141,7 @@ def apply(request):
 
     if request.method == 'POST':
         if instance:
-            instance.delete()
+            #instance.delete()
             if not form.is_valid():
                 instance.save()
         else:

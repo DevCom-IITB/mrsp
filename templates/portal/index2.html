@@ -79,7 +79,7 @@
                 </div>
                 {% if status == 3 %}
                     <div class="step-body">
-                        {% if instance.waitlist_t1 == -2 and instance.waitlist_mt == -2 %}
+                        {% if instance.waitlist_t1 == -2 and instance.waitlist_m == -2 and instance.waitlist_t == -2 %}
                             <p>
                                 You declined to all the seats offered to you by the HCU Office.
                                 To reappear in the waitlist, you have to reapply for accommodation.
@@ -120,9 +120,14 @@
                                         </tr>
                                     {% endif %}
                                     <tr>
-                                        <td>Manas and Tulsi</td>
-                                        <td>{% if instance.waitlist_mt == -2 %}Declined{% else %}
-                                            {{ instance.waitlist_mt }}{% endif %}</td>
+                                        <td>Manas</td>
+                                        <td>{% if instance.waitlist_m == -2 %}Declined{% else %}
+                                            {{ instance.waitlist_m }}{% endif %}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Tulsi</td>
+                                        <td>{% if instance.waitlist_t == -2 %}Declined{% else %}
+                                            {{ instance.waitlist_t }}{% endif %}</td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -192,7 +197,7 @@
                                             onclick="onClick(event)">Accept
                                     </button>
                                 </div>
-                            {% elif instance.waitlist_mt > 0 %}
+                            {% elif instance.waitlist_m > 0 or instance.waitlist_t > 0 %}
                                 <div class="input-group" style="margin-bottom: 0">
                                     <table>
                                         <thead>
@@ -204,8 +209,12 @@
 
                                         <tbody>
                                         <tr>
-                                            <td>Manas and Tulsi</td>
-                                            <td>{{ instance.waitlist_mt }}</td>
+                                            <td>Manas</td>
+                                            <td>{{ instance.waitlist_m }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Tulsi</td>
+                                            <td>{{ instance.waitlist_t }}</td>
                                         </tr>
                                         </tbody>
                                     </table>
