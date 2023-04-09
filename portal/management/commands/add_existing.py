@@ -4,6 +4,7 @@ from tqdm import tqdm
 from pathlib import Path
 import pandas as pd
 import datetime
+from dateutil import parser
 
 class Command(BaseCommand):
     help = "Adding Existing Applicants who have been alloted rooms"
@@ -15,7 +16,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         data_file = Path(options["file-path"][0]).resolve()
         building = options['building'][0]
-        print(building)
         building_mapping = {'Type1':1,'Manas':2,'Tulse':3}
 
         if not data_file.exists():
@@ -33,7 +33,8 @@ class Command(BaseCommand):
                     name=row['name'],
                     roll_number=roll,
                     department=str(row['dept']).upper(),
-                    fellowship_date=datetime.datetime.strptime(row['reg date'],'%d-%m-%y'),
+                    fellowship_date=parser.parse(row['reg date']),
+                    application_date=parser.parse(row['reg date']),
                     waitlist_t1 = -1 if building!="Type1" else 0,
                     waitlist_t = -1 if building!="Tulsi" else 0,
                     waitlist_m = -1 if building!="Manas" else 0,
@@ -42,12 +43,12 @@ class Command(BaseCommand):
                     photograph_verified=True,
                     grade_sheet_verified=True,
                     recommendation_verified=True,
-                    offer=building_mapping[building],
+                    offer=0,
                     occupying=building_mapping[building],
-                    occupied_on=datetime.datetime.strptime(row['start date'],'%d-%m-%y')
+                    occupied_on=parser.parse(row['reg date'])
                 )
                 applicant.save()
             except Exception as e:
-                tqdm.write(str(e))
+                tqdm.write(f"Err {e}")
         
         

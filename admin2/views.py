@@ -55,12 +55,12 @@ def hcu_admin(request):
         (Q(marriage_certificate_verified=False) | Q(photograph_verified=False) | Q(grade_sheet_verified=False)
          | Q(recommendation_verified=False)) & Q(acad_verified=True)),
 
-        WaitlistApplicant.objects.filter(Q(waitlist_t1__gt=0)),
-        WaitlistApplicant.objects.filter(Q(waitlist_m__gt=0)),
-        WaitlistApplicant.objects.filter(Q(waitlist_t__gt=0)),
-        WaitlistApplicant.objects.filter(Q(occupying=1) & Q(acad_verified=True)),
-        WaitlistApplicant.objects.filter(Q(occupying=2) & Q(acad_verified=True)),
-        WaitlistApplicant.objects.filter(Q(occupying=3) & Q(acad_verified=True)),
+        WaitlistApplicant.objects.filter(Q(waitlist_t1__gt=0)).order_by("waitlist_t1"),
+        WaitlistApplicant.objects.filter(Q(waitlist_m__gt=0)).order_by("waitlist_m"),
+        WaitlistApplicant.objects.filter(Q(waitlist_t__gt=0)).order_by("waitlist_t"),
+        WaitlistApplicant.objects.filter(Q(occupying=1) & Q(acad_verified=True)).order_by("-application_date"),
+        WaitlistApplicant.objects.filter(Q(occupying=2) & Q(acad_verified=True)).order_by("-application_date"),
+        WaitlistApplicant.objects.filter(Q(occupying=3) & Q(acad_verified=True)).order_by("-application_date"),
 
         WaitlistApplicant.objects.filter(Q(waitlist_t1=-3) |  Q(waitlist_m=-3) | Q(waitlist_t=-3))]
 

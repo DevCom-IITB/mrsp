@@ -5,6 +5,8 @@ from django.db.models import Q
 @admin.register(WaitlistApplicant)
 class WaitlistAdmin(admin.ModelAdmin):
     model = WaitlistApplicant
+
+    search_fields = ['roll_number']
     list_display = ['name','roll_number','occupying_building','vacating_date']
 
     def get_queryset(self, request):

@@ -12,7 +12,7 @@ class ApplicantBase(models.Model):
     def __str__(self):
         return self.roll_number
 
-    application_date = models.DateTimeField(null=True,blank=True, auto_now_add=True)
+    application_date = models.DateTimeField(null=True,blank=True, default=datetime.datetime.now())
     name = models.CharField(max_length=128, default='')
     roll_number = models.CharField(max_length=15, unique=True)
     email = models.EmailField(max_length=128, default='')
@@ -110,10 +110,7 @@ class WaitlistApplicant(ApplicantBase):
         if not self.all_verified():
             return -1, -1, -1
 
-        if self.pk is None:
-            ls = reversed(WaitlistApplicant.objects.all())
-        else:
-            ls = reversed(WaitlistApplicant.objects.filter(id__lt=self.id))
+        ls = reversed(WaitlistApplicant.objects.filter(application_date__lt=self.application_date))
 
         waitlist_t1 = 1
         waitlist_m = 1
@@ -193,7 +190,7 @@ class WaitlistApplicant(ApplicantBase):
         db_lock.obtain_lock()
 
         try:
-            waitlist_ahead = WaitlistApplicant.objects.filter(id__gt=self.id)
+            waitlist_ahead = WaitlistApplicant.objects.filter(application_date__gt=self.application_date)
             # waitlist_t1, waitlist_m, waitlist_t = self.refresh_waitlist_mock()
             # waitlist_t1 += offset_t1
             # waitlist_m += offset_m
@@ -216,7 +213,7 @@ class WaitlistApplicant(ApplicantBase):
         db_lock.obtain_lock()
 
         try:
-            waitlist_ahead = WaitlistApplicant.objects.filter(id__gt=self.id)
+            waitlist_ahead = WaitlistApplicant.objects.filter(application_date__gt=self.application_date)
             # waitlist_t1, waitlist_m, waitlist_t = self.refresh_waitlist_mock()
             # waitlist_t1 += offset_t1
             # waitlist_m += offset_m
