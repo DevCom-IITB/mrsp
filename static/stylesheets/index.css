@@ -54,6 +54,19 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-weight: 500; }
 
+.madeby {
+    background: var(--form-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 8px;
+    padding: 8px 8px;
+    text-align: center; 
+}
+
 nav {
   margin: 0;
   padding: 20px;
