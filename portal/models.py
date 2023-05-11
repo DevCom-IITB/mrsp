@@ -12,7 +12,7 @@ class ApplicantBase(models.Model):
     def __str__(self):
         return self.roll_number
 
-    application_date = models.DateTimeField(null=True,blank=True, default=datetime.datetime.now())
+    application_date = models.DateField(null=True,blank=True,help_text='the format should be YYYY-MM-DD') #the format is YYYY-MM-DD
     name = models.CharField(max_length=128, default='')
     roll_number = models.CharField(max_length=15, unique=True)
     email = models.EmailField(max_length=128, default='')
