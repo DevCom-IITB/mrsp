@@ -3,6 +3,7 @@ from django.core.validators import RegexValidator, FileExtensionValidator
 from django.contrib.auth.models import User
 import datetime
 from . import db_lock
+from django.utils import timezone
 
 
 class ApplicantBase(models.Model):
@@ -12,7 +13,7 @@ class ApplicantBase(models.Model):
     def __str__(self):
         return self.roll_number
 
-    application_date = models.DateTimeField(null=True,blank=True, default=datetime.datetime.now())
+    application_date = models.DateTimeField(null=True,blank=True, default=timezone.now)
     name = models.CharField(max_length=128, default='')
     roll_number = models.CharField(max_length=15, unique=True)
     email = models.EmailField(max_length=128, default='')

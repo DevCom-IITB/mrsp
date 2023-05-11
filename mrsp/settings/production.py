@@ -11,7 +11,7 @@ ALLOWED_HOSTS = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': config("MRSP_test"),
+        'NAME': config("DB_NAME"),
         'USER':config('DB_USER'), 
 	'PASSWORD': config("DB_PASSWD"), 
 	'HOST':'mysql',
