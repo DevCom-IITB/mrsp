@@ -15,6 +15,7 @@ urlpatterns = [
     path('mrsp/apply/', portal.views.apply, name='apply'),
     path('mrsp/thanks/', portal.views.thanks, name='thanks'),
     path('mrsp/edit_docs/', portal.views.edit_docs, name='edit_docs'),
+    path('mrsp/waitlist/', portal.views.waitlist, name = 'waitlist'),
 
     path('mrsp/oauth/login/', oauth.views.oauth, name='oauth'),
     path('mrsp/oauth/callback/', oauth.views.login_client, name='login_client'),

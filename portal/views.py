@@ -6,6 +6,7 @@ from .forms import ApplicantForm, EditDocsForm
 from oauth.decorators import redirect_if_authenticated, students_only
 from .models import WaitlistApplicant
 import datetime
+from django.db.models import Q
 
 from .mails import mail_registered, mail_occupied, mail_vacated
 
@@ -100,7 +101,25 @@ def index(request):
             'vacated_on': applicant.vacated_on
         })
 
+def waitlist(request):
+    arr = [WaitlistApplicant.objects.filter(
+        (Q(marriage_certificate_verified=False) | Q(photograph_verified=False) | Q(grade_sheet_verified=False)
+         | Q(recommendation_verified=False)) & Q(acad_verified=True)),
 
+        WaitlistApplicant.objects.filter(Q(waitlist_t1__gt=0)).order_by("waitlist_t1"),
+        WaitlistApplicant.objects.filter(Q(waitlist_m__gt=0)).order_by("waitlist_m"),
+        WaitlistApplicant.objects.filter(Q(waitlist_t__gt=0)).order_by("waitlist_t"),
+        WaitlistApplicant.objects.filter(Q(occupying=1) & Q(acad_verified=True)).order_by("-application_date"),
+        WaitlistApplicant.objects.filter(Q(occupying=2) & Q(acad_verified=True)).order_by("-application_date"),
+        WaitlistApplicant.objects.filter(Q(occupying=3) & Q(acad_verified=True)).order_by("-application_date"),
+
+        WaitlistApplicant.objects.filter(Q(waitlist_t1=-3) |  Q(waitlist_m=-3) | Q(waitlist_t=-3))]
+
+    tab = int(request.GET.get('tab') or '1')
+    return render(request, 'portal/waitlist.html', {
+        'arr': arr[tab],
+        'tab': tab,
+    })
 @login_required
 @students_only
 def rules(request):

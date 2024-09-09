@@ -30,7 +30,7 @@
             <div>
                 {% block acad_switch %}
                 {% endblock %}
-
+                <button class="waitlist" onclick="location.href = '{% url 'waitlist' %}'">Waitlist</button>
                 {% if user.is_authenticated %}
                     <button class="error" onclick="location.href = '{% url 'logout_client' %}'">Log out</button>
                 {% endif %}
@@ -55,7 +55,7 @@
         <div class="spacing"></div>
             <div class="madeby">
                 <div class="text">
-                    Created with <E2><9D><A4><EF><B8><8F> by DevCom
+                    Created with ❤️ by DevCom
                     | An HA Initiative
                 </div>
             </div>
